@@ -29,7 +29,7 @@ changelog=
 # tags are comma separated with spaces allowed
 tags=print,composer
 
-homepage=http://www.sourcepole.ch
+homepage=https://github.com/sourcepole/qgis-instantprint-plugin
 tracker=https://github.com/sourcepole/qgis-instantprint-plugin/issues
 repository=https://github.com/sourcepole/qgis-instantprint-plugin
 icon=icons/icon.png
