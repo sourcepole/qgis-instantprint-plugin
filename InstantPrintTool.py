@@ -39,8 +39,6 @@ class InstantPrintTool(QgsMapTool):
         self.dialogui.comboBox_fileformat.addItem("PNG", self.tr("PNG Image (*.png);;"))
         self.dialogui.spinBoxScale.valueChanged.connect(self.__changeScale)
 
-        self.__reloadComposers()
-
         self.iface.composerAdded.connect(lambda view: self.__reloadComposers())
         self.iface.composerWillBeRemoved.connect(self.__reloadComposers)
         self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
@@ -51,6 +49,7 @@ class InstantPrintTool(QgsMapTool):
     def setEnabled(self, enabled):
         if enabled:
             self.dialog.setVisible(True)
+            self.__reloadComposers()
             self.__selectComposer()
             self.iface.mapCanvas().setMapTool(self)
             self.iface.mapCanvas().setCursor(Qt.OpenHandCursor)
@@ -212,6 +211,10 @@ class InstantPrintTool(QgsMapTool):
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
 
     def __reloadComposers(self, removed=None):
+        if not self.dialog.isVisible():
+            # Make it less likely to hit the issue outlined in https://github.com/qgis/QGIS/pull/1938
+            return
+
         self.dialogui.comboBox_composers.blockSignals(True)
         prev = None
         if self.dialogui.comboBox_composers.currentIndex() >= 0:
