@@ -195,6 +195,9 @@ class InstantPrintTool(QgsMapTool):
         if not filename:
             return
 
+        # Ensure output filename has correct extension
+        filename = os.path.splitext(filename)[0] + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+
         settings.setValue("/instantprint/lastfile", filename)
 
         if self.populateCompositionFz:
