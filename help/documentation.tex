@@ -53,7 +53,7 @@
 \makesavenoteenv{itemize}
 
 %Index, Bibliography
-\usepackage{makeidx,tocbibind} % Use \tableofcontents resp \makeindex 
+\usepackage{makeidx,tocbibind} % Use \tableofcontents resp \makeindex
 \makeindex
 
 %Hyperref
@@ -68,13 +68,7 @@
 \titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\quad\textcolor[rgb]{0.75,0.75,0.75}{|}\quad}{0pt}{\Huge\bfseries}
 
 %Misc
-\usepackage{amsfonts,amssymb,amsmath,amsopn,amsthm,tabularx}
-\usepackage{enumitem}
-
-%Custom commands
-\newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}\cleardoublepage}}
-%\renewcommand\thechapter{\Roman{chapter}} %For documentclass report only
-%\renewcommand{\vec}[1]{\bm{#1}}
+\usepackage{tabularx}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
@@ -127,6 +121,8 @@ Clicking on the Export button in the instant print dialog opens a file save dial
  \hline
  \textbf{Version} & \textbf{Date} & \textbf{Author} & \textbf{Description} \\\hline
  1.0   & 26.02.2015 & Sandro Mani & First release \\\hline
+ 1.0.1 & 18.03.2015 & Sandro Mani & Ensure export filename has correct extension. \\
+       &            &             & Partial workaround for QGIS bug causing crashes when closing a project with more than one composer. (To prevent crashes, make sure the Instant Print dialog is closed before closing a project.)\\\hline
  \end{tabularx}
 \end{center}
 }}
