@@ -45,6 +45,7 @@ class InstantPrintTool(QgsMapTool):
         self.exportButton.clicked.connect(self.__export)
         self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.setEnabled(False))
+        self.setCursor(Qt.OpenHandCursor)
 
     def setEnabled(self, enabled):
         if enabled:
@@ -52,7 +53,6 @@ class InstantPrintTool(QgsMapTool):
             self.__reloadComposers()
             self.__selectComposer()
             self.iface.mapCanvas().setMapTool(self)
-            self.iface.mapCanvas().setCursor(Qt.OpenHandCursor)
         else:
             self.dialog.setVisible(False)
             self.__cleanup()
@@ -106,7 +106,6 @@ class InstantPrintTool(QgsMapTool):
 
         self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
         self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
-        self.rubberband.setCursor(Qt.OpenHandCursor)
         self.rubberband.setColor(QColor(127, 127, 255, 127))
 
         self.pressPos = None
@@ -130,7 +129,7 @@ class InstantPrintTool(QgsMapTool):
             self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
             self.oldrubberband.setColor(QColor(127, 127, 255, 31))
             self.pressPos = (e.x(), e.y())
-            self.rubberband.setCursor(Qt.ClosedHandCursor)
+            self.iface.mapCanvas().setCursor(Qt.ClosedHandCursor)
 
     def canvasMoveEvent(self, e):
         if not self.pressPos:
@@ -171,7 +170,7 @@ class InstantPrintTool(QgsMapTool):
         if e.button() == Qt.LeftButton and self.pressPos:
             self.corner = QPointF(self.rect.x(), self.rect.y())
             self.pressPos = None
-            self.rubberband.setCursor(Qt.OpenHandCursor)
+            self.iface.mapCanvas().setCursor(Qt.OpenHandCursor)
             self.iface.mapCanvas().scene().removeItem(self.oldrubberband)
             self.oldrect = None
             self.oldrubberband = None
