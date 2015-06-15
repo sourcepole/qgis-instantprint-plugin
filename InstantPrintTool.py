@@ -81,7 +81,14 @@ class InstantPrintTool(QgsMapTool):
             return
 
         composerView = self.dialogui.comboBox_composers.itemData(activeIndex)
-        maps = composerView.composition().composerMapItems()
+        try:
+            maps = composerView.composition().composerMapItems()
+        except:
+            # composerMapItems is not available with PyQt4 < 4.8.4
+            maps = []
+            for item in composerView.composition().items():
+                if isinstance(item, QgsComposerMap):
+                    maps.append(item)
         if len(maps) != 1:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
             self.exportButton.setEnabled(False)
