@@ -231,18 +231,25 @@ class InstantPrintTool(QgsMapTool):
         self.dialogui.comboBox_composers.clear()
         active = 0
         
-        # Load default template
-        composition = QgsComposition(self.iface.mapCanvas().mapRenderer())
-        composition.setPlotStyle(QgsComposition.Print)
-        x, y = 0, 0
-        w, h = (210.0,297.0)
-        composition.setPaperSize(w, h)
-        composerMap = QgsComposerMap(composition, x ,y, w, h)
-        composerMap.setNewScale(composerMap.scale()/2)
-        composition.addItem(composerMap)
-        composerView = QgsComposerView()
-        composerView.setComposition(composition)
-        self.dialogui.comboBox_composers.addItem('DEFAULT', composerView)
+        # Load default templates
+        formats = {
+                "Default_A4_v":[210.0,297.0],
+                "Default_A4_h":[297.0,210.0]
+             }
+        for format,size in formats.iteritems():
+            print format, size
+            
+        for format,size in formats.iteritems():
+            composition = QgsComposition(self.iface.mapCanvas().mapRenderer())
+            composition.setPlotStyle(QgsComposition.Print)
+            x, y, w, h = 0, 0, size[0], size[1]
+            composition.setPaperSize(w, h)
+            composerMap = QgsComposerMap(composition, x ,y, w, h)
+            composerMap.setNewScale(composerMap.scale()/2)
+            composition.addItem(composerMap)
+            composerView = QgsComposerView()
+            composerView.setComposition(composition)
+            self.dialogui.comboBox_composers.addItem(format, composerView)
         
         for composer in self.iface.activeComposers():
             if composer != removed and composer.composerWindow():
