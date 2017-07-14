@@ -32,6 +32,7 @@ class InstantPrintTool(QgsMapTool):
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
         self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
+        self.digitizeButton = self.dialogui.buttonBox.addButton(self.tr("Digitize"), QDialogButtonBox.HelpRole)
         self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QDialogButtonBox.HelpRole)
         self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
         self.dialogui.comboBox_fileformat.addItem("JPG", self.tr("JPG Image (*.jpg);;"))
@@ -43,6 +44,7 @@ class InstantPrintTool(QgsMapTool):
         self.iface.composerWillBeRemoved.connect(self.__reloadComposers)
         self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
         self.exportButton.clicked.connect(self.__export)
+        self.digitizeButton.clicked.connect(self.__digitize)
         self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.setEnabled(False))
         self.setCursor(Qt.OpenHandCursor)
@@ -218,6 +220,23 @@ class InstantPrintTool(QgsMapTool):
                 success = image.save(filename)
         if not success:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
+    
+    def __digitize(self):
+        if self.rubberband and self.iface.activeLayer():
+            lyr = self.iface.activeLayer()
+            if lyr.crs().authid() != self.iface.mapCanvas().mapRenderer().destinationCrs().authid():
+                QMessageBox.warning(self.iface.mainWindow(), self.tr("Digitizing Failed"), self.tr("The target layer crs is different from project crs "))
+                return
+            if lyr.geometryType() == QGis.Point:
+                QMessageBox.warning(self.iface.mainWindow(), self.tr("Digitizing Failed"), self.tr("Can't digitize to point layer"))
+                return
+            if lyr.geometryType() == QGis.Line:
+                newGeom = QgsGeometry.fromPolyline(self.rubberband.asGeometry().asPolygon()[0])
+            if lyr.geometryType() == QGis.Polygon:
+                newGeom = self.rubberband.asGeometry()
+            newFeat = QgsFeature(lyr.pendingFields())
+            newFeat.setGeometry(newGeom)
+            lyr.addFeatures([newFeat])
 
     def __reloadComposers(self, removed=None):
         if not self.dialog.isVisible():
