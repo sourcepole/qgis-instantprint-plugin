@@ -47,6 +47,10 @@ class InstantPrintTool(QgsMapTool):
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.setEnabled(False))
         self.setCursor(Qt.OpenHandCursor)
 
+        settings = QSettings()
+        if not settings.value("geometry") == None:
+            self.dialog.restoreGeometry(settings.value("geometry"))
+        
     def setEnabled(self, enabled):
         if enabled:
             self.dialog.setVisible(True)
@@ -57,6 +61,7 @@ class InstantPrintTool(QgsMapTool):
             self.dialog.setVisible(False)
             self.__cleanup()
             self.iface.mapCanvas().unsetMapTool(self)
+            QSettings().setValue("geometry", self.dialog.saveGeometry())
 
     def __changeScale(self):
         if not self.mapitem:
