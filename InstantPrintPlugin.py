@@ -37,6 +37,7 @@ class InstantPrintPlugin(QObject):
 
     def initGui(self):
         self.toolButton = QToolButton(self.iface.mapNavToolToolBar())
+        self.toolButton = QToolButton(self.iface.mapNavToolToolBar())
         self.toolButton.setIcon(QIcon(":/plugins/instantprint/icons/icon.png"))
         self.toolButton.setText(self.tr("Instant Print"))
         self.toolButton.setToolTip(self.tr("Instant Print"))
@@ -45,6 +46,7 @@ class InstantPrintPlugin(QObject):
 
         self.toolButton.toggled.connect(self.__enableTool)
         self.iface.mapCanvas().mapToolSet.connect(self.__onToolSet)
+        
 
     def unload(self):
         self.tool.setEnabled(False)

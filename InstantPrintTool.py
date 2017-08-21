@@ -16,7 +16,16 @@ import os
 
 from ui.ui_printdialog import Ui_InstantPrintDialog
 
-
+class MyDialog(QDialog):
+    
+    hidden = pyqtSignal()
+    
+    def __init__(self):
+        QDialog.__init__(self)
+        
+    def hideEvent(self,  ev):
+        self.hidden.emit()
+        
 class InstantPrintTool(QgsMapTool):
 
     def __init__(self, iface, populateCompositionFz=None):
@@ -28,9 +37,11 @@ class InstantPrintTool(QgsMapTool):
         self.pressPos = None
         self.populateCompositionFz = populateCompositionFz
 
-        self.dialog = QDialog(self.iface.mainWindow())
+        self.dialog = MyDialog()
+        self.dialog.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
+        self.dialog.hidden.connect(self.__onDialogHidden)
         self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
         self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QDialogButtonBox.HelpRole)
         self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
@@ -44,24 +55,25 @@ class InstantPrintTool(QgsMapTool):
         self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
         self.exportButton.clicked.connect(self.__export)
         self.helpButton.clicked.connect(self.__help)
-        self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.setEnabled(False))
+        self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
         self.setCursor(Qt.OpenHandCursor)
 
         settings = QSettings()
         if not settings.value("geometry") == None:
             self.dialog.restoreGeometry(settings.value("geometry"))
+            
         
+    def __onDialogHidden(self):
+        self.__cleanup()
+        self.iface.mapCanvas().unsetMapTool(self)
+        QSettings().setValue("geometry", self.dialog.saveGeometry())
+        
+    
     def setEnabled(self, enabled):
-        if enabled:
-            self.dialog.setVisible(True)
-            self.__reloadComposers()
-            self.__selectComposer()
-            self.iface.mapCanvas().setMapTool(self)
-        else:
-            self.dialog.setVisible(False)
-            self.__cleanup()
-            self.iface.mapCanvas().unsetMapTool(self)
-            QSettings().setValue("geometry", self.dialog.saveGeometry())
+        self.dialog.setVisible(True)
+        self.__reloadComposers()
+        self.__selectComposer()
+        self.iface.mapCanvas().setMapTool(self)
 
     def __changeScale(self):
         if not self.mapitem:
@@ -187,6 +199,7 @@ class InstantPrintTool(QgsMapTool):
             self.oldrect = None
             self.oldrubberband = None
             self.mapitem.setNewExtent(QgsRectangle(self.rect))
+            
 
     def __canvasRect(self, rect):
         mtp = self.iface.mapCanvas().mapSettings().mapToPixel()
