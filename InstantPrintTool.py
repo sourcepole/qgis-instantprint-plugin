@@ -16,7 +16,7 @@ import os
 
 from ui.ui_printdialog import Ui_InstantPrintDialog
 
-class MyDialog(QDialog):
+class InstantPrintDialog(QDialog):
     
     hidden = pyqtSignal()
     
@@ -37,7 +37,7 @@ class InstantPrintTool(QgsMapTool):
         self.pressPos = None
         self.populateCompositionFz = populateCompositionFz
 
-        self.dialog = MyDialog()
+        self.dialog = InstantPrintDialog()
         self.dialog.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
@@ -56,24 +56,27 @@ class InstantPrintTool(QgsMapTool):
         self.exportButton.clicked.connect(self.__export)
         self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
+        self.deactivated.connect(self.__cleanup)
         self.setCursor(Qt.OpenHandCursor)
 
         settings = QSettings()
         if not settings.value("geometry") == None:
             self.dialog.restoreGeometry(settings.value("geometry"))
-            
+
         
     def __onDialogHidden(self):
-        self.__cleanup()
-        self.iface.mapCanvas().unsetMapTool(self)
+        self.setEnabled(False)
         QSettings().setValue("geometry", self.dialog.saveGeometry())
-        
-    
-    def setEnabled(self, enabled):
-        self.dialog.setVisible(True)
-        self.__reloadComposers()
-        self.__selectComposer()
-        self.iface.mapCanvas().setMapTool(self)
+
+
+    def setEnabled(self,  enabled):
+        if enabled:
+            self.dialog.setVisible(True)
+            self.__reloadComposers()
+            self.iface.mapCanvas().setMapTool(self)
+        else: 
+            self.iface.mapCanvas().unsetMapTool(self)    
+
 
     def __changeScale(self):
         if not self.mapitem:
@@ -109,6 +112,8 @@ class InstantPrintTool(QgsMapTool):
         if len(maps) != 1:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
             self.exportButton.setEnabled(False)
+            self.iface.mapCanvas().scene().removeItem(self.rubberband)
+            self.rubberband = None
             self.dialogui.spinBoxScale.setEnabled(False)
             return
 
@@ -199,7 +204,7 @@ class InstantPrintTool(QgsMapTool):
             self.oldrect = None
             self.oldrubberband = None
             self.mapitem.setNewExtent(QgsRectangle(self.rect))
-            
+
 
     def __canvasRect(self, rect):
         mtp = self.iface.mapCanvas().mapSettings().mapToPixel()
