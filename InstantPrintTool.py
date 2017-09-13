@@ -37,8 +37,7 @@ class InstantPrintTool(QgsMapTool):
         self.pressPos = None
         self.populateCompositionFz = populateCompositionFz
 
-        self.dialog = InstantPrintDialog()
-        self.dialog.setWindowFlags(Qt.WindowStaysOnTopHint)
+        self.dialog = InstantPrintDialog(parent)
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
         self.dialog.hidden.connect(self.__onDialogHidden)
