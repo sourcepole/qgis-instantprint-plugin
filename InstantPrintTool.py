@@ -16,6 +16,7 @@ import os
 
 from ui.ui_printdialog import Ui_InstantPrintDialog
 
+
 class InstantPrintDialog(QDialog):
 
     hidden = pyqtSignal()
@@ -23,8 +24,9 @@ class InstantPrintDialog(QDialog):
     def __init__(self, parent):
         QDialog.__init__(self, parent)
 
-    def hideEvent(self,  ev):
+    def hideEvent(self, ev):
         self.hidden.emit()
+
 
 class InstantPrintTool(QgsMapTool):
 
@@ -59,23 +61,20 @@ class InstantPrintTool(QgsMapTool):
         self.setCursor(Qt.OpenHandCursor)
 
         settings = QSettings()
-        if not settings.value("geometry") == None:
+        if not settings.value("geometry") is None:
             self.dialog.restoreGeometry(settings.value("geometry"))
-
 
     def __onDialogHidden(self):
         self.setEnabled(False)
         QSettings().setValue("geometry", self.dialog.saveGeometry())
 
-
-    def setEnabled(self,  enabled):
+    def setEnabled(self, enabled):
         if enabled:
             self.dialog.setVisible(True)
             self.__reloadComposers()
             self.iface.mapCanvas().setMapTool(self)
         else:
             self.iface.mapCanvas().unsetMapTool(self)
-
 
     def __changeScale(self):
         if not self.mapitem:
@@ -150,7 +149,6 @@ class InstantPrintTool(QgsMapTool):
     def canvasPressEvent(self, e):
         if not self.rubberband:
             return
-        r = self.__canvasRect(self.rect)
         if e.button() == Qt.LeftButton and self.__canvasRect(self.rect).contains(e.pos()):
             self.oldrect = QRectF(self.rect)
             self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
@@ -203,7 +201,6 @@ class InstantPrintTool(QgsMapTool):
             self.oldrect = None
             self.oldrubberband = None
             self.mapitem.setNewExtent(QgsRectangle(self.rect))
-
 
     def __canvasRect(self, rect):
         mtp = self.iface.mapCanvas().mapSettings().mapToPixel()
