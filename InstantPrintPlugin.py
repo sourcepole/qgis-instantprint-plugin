@@ -15,6 +15,7 @@ from qgis.gui import *
 import os
 
 from InstantPrintTool import InstantPrintTool
+import resources_rc
 
 
 class InstantPrintPlugin(QObject):

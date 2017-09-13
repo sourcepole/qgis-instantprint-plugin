@@ -149,6 +149,7 @@ class InstantPrintTool(QgsMapTool):
     def canvasPressEvent(self, e):
         if not self.rubberband:
             return
+        r = self.__canvasRect(self.rect)
         if e.button() == Qt.LeftButton and self.__canvasRect(self.rect).contains(e.pos()):
             self.oldrect = QRectF(self.rect)
             self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
