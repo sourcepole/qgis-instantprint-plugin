@@ -45,7 +45,7 @@ class InstantPrintPlugin(QObject):
 
         self.toolButton.toggled.connect(self.__enableTool)
         self.iface.mapCanvas().mapToolSet.connect(self.__onToolSet)
-        
+
     def unload(self):
         self.tool.setEnabled(False)
         self.tool = None

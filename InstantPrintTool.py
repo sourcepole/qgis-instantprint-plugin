@@ -17,15 +17,15 @@ import os
 from ui.ui_printdialog import Ui_InstantPrintDialog
 
 class InstantPrintDialog(QDialog):
-    
+
     hidden = pyqtSignal()
-    
-    def __init__(self):
-        QDialog.__init__(self)
-        
+
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
+
     def hideEvent(self,  ev):
         self.hidden.emit()
-        
+
 class InstantPrintTool(QgsMapTool):
 
     def __init__(self, iface, populateCompositionFz=None):
@@ -63,7 +63,7 @@ class InstantPrintTool(QgsMapTool):
         if not settings.value("geometry") == None:
             self.dialog.restoreGeometry(settings.value("geometry"))
 
-        
+
     def __onDialogHidden(self):
         self.setEnabled(False)
         QSettings().setValue("geometry", self.dialog.saveGeometry())
@@ -74,8 +74,8 @@ class InstantPrintTool(QgsMapTool):
             self.dialog.setVisible(True)
             self.__reloadComposers()
             self.iface.mapCanvas().setMapTool(self)
-        else: 
-            self.iface.mapCanvas().unsetMapTool(self)    
+        else:
+            self.iface.mapCanvas().unsetMapTool(self)
 
 
     def __changeScale(self):
