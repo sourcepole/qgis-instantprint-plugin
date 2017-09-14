@@ -28,18 +28,19 @@ class InstantPrintDialog(QDialog):
         self.hidden.emit()
 
 
-class InstantPrintTool(QgsMapTool):
+class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
-    def __init__(self, iface, populateCompositionFz=None):
+    def __init__(self, iface, parent=None, populateCompositionFz=None):
         QgsMapTool.__init__(self, iface.mapCanvas())
 
         self.iface = iface
+        self.parent = parent
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
         self.populateCompositionFz = populateCompositionFz
 
-        self.dialog = InstantPrintDialog(parent)
+        self.dialog = InstantPrintDialog(self.parent)
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
         self.dialog.hidden.connect(self.__onDialogHidden)
