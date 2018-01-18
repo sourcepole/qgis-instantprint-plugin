@@ -15,8 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset theme="printer">
-    <normaloff/>
-   </iconset>
+    <normaloff>qgis-instantprint-plugin/ui</normaloff>qgis-instantprint-plugin/ui</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
