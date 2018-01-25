@@ -17,11 +17,13 @@ except AttributeError:
 
 try:
     _encoding = QtGui.QApplication.UnicodeUTF8
+
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
+
 
 class Ui_InstantPrintDialog(object):
     def setupUi(self, InstantPrintDialog):
@@ -70,4 +72,3 @@ class Ui_InstantPrintDialog(object):
         self.label_composers.setText(_translate("InstantPrintDialog", "Composer:", None))
         self.label_fileformat.setText(_translate("InstantPrintDialog", "File format:", None))
         self.label.setText(_translate("InstantPrintDialog", "Scale:", None))
-
