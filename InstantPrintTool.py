@@ -8,13 +8,13 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from qgis.core import *
-from qgis.gui import *
+from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl
+from PyQt5.QtGui import QColor, QDesktopServices
+from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
+from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter
+from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
 import os
-
-from ui.ui_printdialog import Ui_InstantPrintDialog
+from .ui.ui_printdialog import Ui_InstantPrintDialog
 
 
 class InstantPrintTool(QgsMapTool):
@@ -23,6 +23,8 @@ class InstantPrintTool(QgsMapTool):
         QgsMapTool.__init__(self, iface.mapCanvas())
 
         self.iface = iface
+        projectInstance = QgsProject.instance()
+        self.projectLayoutManager = projectInstance.layoutManager()
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
@@ -38,9 +40,8 @@ class InstantPrintTool(QgsMapTool):
         self.dialogui.comboBox_fileformat.addItem("BMP", self.tr("BMP Image (*.bmp);;"))
         self.dialogui.comboBox_fileformat.addItem("PNG", self.tr("PNG Image (*.png);;"))
         self.dialogui.spinBoxScale.valueChanged.connect(self.__changeScale)
-
-        self.iface.composerAdded.connect(lambda view: self.__reloadComposers())
-        self.iface.composerWillBeRemoved.connect(self.__reloadComposers)
+        self.iface.layoutDesignerOpened.connect(lambda view: self.__reloadComposers())
+        self.iface.layoutDesignerWillBeClosed.connect(self.__reloadComposers)
         self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
         self.exportButton.clicked.connect(self.__export)
         self.helpButton.clicked.connect(self.__help)
@@ -48,9 +49,9 @@ class InstantPrintTool(QgsMapTool):
         self.setCursor(Qt.OpenHandCursor)
 
         settings = QSettings()
-        if not settings.value("geometry") == None:
-            self.dialog.restoreGeometry(settings.value("geometry"))
-        
+        if settings.value("instantprint/geometry") is not None:
+            self.dialog.restoreGeometry(settings.value("instantprint/geometry"))
+
     def setEnabled(self, enabled):
         if enabled:
             self.dialog.setVisible(True)
@@ -61,7 +62,7 @@ class InstantPrintTool(QgsMapTool):
             self.dialog.setVisible(False)
             self.__cleanup()
             self.iface.mapCanvas().unsetMapTool(self)
-            QSettings().setValue("geometry", self.dialog.saveGeometry())
+            QSettings().setValue("instantprint/geometry", self.dialog.saveGeometry())
 
     def __changeScale(self):
         if not self.mapitem:
@@ -75,7 +76,7 @@ class InstantPrintTool(QgsMapTool):
         y1 = center.y() - 0.5 * newheight
         x2 = center.x() + 0.5 * newwidth
         y2 = center.y() + 0.5 * newheight
-        self.mapitem.setNewExtent(QgsRectangle(x1, y1, x2, y2))
+        self.mapitem.setExtent(QgsRectangle(x1, y1, x2, y2))
         self.__createRubberBand()
 
     def __selectComposer(self):
@@ -86,14 +87,10 @@ class InstantPrintTool(QgsMapTool):
             return
 
         composerView = self.dialogui.comboBox_composers.itemData(activeIndex)
-        try:
-            maps = composerView.composition().composerMapItems()
-        except:
-            # composerMapItems is not available with PyQt4 < 4.8.4
-            maps = []
-            for item in composerView.composition().items():
-                if isinstance(item, QgsComposerMap):
-                    maps.append(item)
+        maps = []
+        itemName = self.dialogui.comboBox_composers.currentText()
+        item = self.projectLayoutManager.layoutByName(itemName)
+        maps.append(item)
         if len(maps) != 1:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
             self.exportButton.setEnabled(False)
@@ -104,7 +101,7 @@ class InstantPrintTool(QgsMapTool):
         self.exportButton.setEnabled(True)
 
         self.composerView = composerView
-        self.mapitem = maps[0]
+        self.mapitem = item.referenceMap()
         self.dialogui.spinBoxScale.setValue(self.mapitem.scale())
         self.__createRubberBand()
 
@@ -114,9 +111,8 @@ class InstantPrintTool(QgsMapTool):
         center = self.iface.mapCanvas().extent().center()
         self.corner = QPointF(center.x() - 0.5 * extent.width(), center.y() - 0.5 * extent.height())
         self.rect = QRectF(self.corner.x(), self.corner.y(), extent.width(), extent.height())
-        self.mapitem.setNewExtent(QgsRectangle(self.rect))
-
-        self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
+        self.mapitem.setExtent(QgsRectangle(self.rect))
+        self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
         self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
         self.rubberband.setColor(QColor(127, 127, 255, 127))
 
@@ -137,7 +133,7 @@ class InstantPrintTool(QgsMapTool):
         r = self.__canvasRect(self.rect)
         if e.button() == Qt.LeftButton and self.__canvasRect(self.rect).contains(e.pos()):
             self.oldrect = QRectF(self.rect)
-            self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
+            self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
             self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
             self.oldrubberband.setColor(QColor(127, 127, 255, 31))
             self.pressPos = (e.x(), e.y())
@@ -186,7 +182,7 @@ class InstantPrintTool(QgsMapTool):
             self.iface.mapCanvas().scene().removeItem(self.oldrubberband)
             self.oldrect = None
             self.oldrubberband = None
-            self.mapitem.setNewExtent(QgsRectangle(self.rect))
+            self.mapitem.setExtent(QgsRectangle(self.rect))
 
     def __canvasRect(self, rect):
         mtp = self.iface.mapCanvas().mapSettings().mapToPixel()
@@ -197,31 +193,31 @@ class InstantPrintTool(QgsMapTool):
     def __export(self):
         settings = QSettings()
         format = self.dialogui.comboBox_fileformat.itemData(self.dialogui.comboBox_fileformat.currentIndex())
-        filename = QFileDialog.getSaveFileName(
+        filepath = QFileDialog.getSaveFileName(
             self.iface.mainWindow(),
             self.tr("Print Composition"),
             settings.value("/instantprint/lastfile", ""),
             format
         )
-        if not filename:
+        if not all(filepath):
             return
 
         # Ensure output filename has correct extension
-        filename = os.path.splitext(filename)[0] + "." + self.dialogui.comboBox_fileformat.currentText().lower()
-
-        settings.setValue("/instantprint/lastfile", filename)
+        filename = os.path.splitext(filepath[0])[0] + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+        settings.setValue("/instantprint/lastfile", filepath[0])
 
         if self.populateCompositionFz:
             self.populateCompositionFz(self.composerView.composition())
 
         success = False
+        itemName = self.dialogui.comboBox_composers.currentText()
+        item = self.projectLayoutManager.layoutByName(itemName)
+        exporter = QgsLayoutExporter(item)
         if filename[-3:].lower() == u"pdf":
-            success = self.composerView.composition().exportAsPDF(filename)
+            success = exporter.exportToPdf(filepath[0], QgsLayoutExporter.PdfExportSettings())
         else:
-            image = self.composerView.composition().printPageAsRaster(self.composerView.composition().itemPageNumber(self.mapitem))
-            if not image.isNull():
-                success = image.save(filename)
-        if not success:
+            success = exporter.exportToImage(filepath[0], QgsLayoutExporter.ImageExportSettings())
+        if success != 0:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
 
     def __reloadComposers(self, removed=None):
@@ -235,10 +231,10 @@ class InstantPrintTool(QgsMapTool):
             prev = self.dialogui.comboBox_composers.currentText()
         self.dialogui.comboBox_composers.clear()
         active = 0
-        for composer in self.iface.activeComposers():
-            if composer != removed and composer.composerWindow():
-                cur = composer.composerWindow().windowTitle()
-                self.dialogui.comboBox_composers.addItem(cur, composer)
+        for layout in self.projectLayoutManager.layouts():
+            if layout != removed and layout.name():
+                cur = layout.name()
+                self.dialogui.comboBox_composers.addItem(cur, layout)
                 if prev == cur:
                     active = self.dialogui.comboBox_composers.count() - 1
         self.dialogui.comboBox_composers.setCurrentIndex(-1)  # Ensure setCurrentIndex below actually changes an index
