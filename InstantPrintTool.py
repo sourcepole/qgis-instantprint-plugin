@@ -8,7 +8,7 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
-from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl
+from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QDesktopServices
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
 from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter
@@ -17,7 +17,18 @@ import os
 from .ui.ui_printdialog import Ui_InstantPrintDialog
 
 
-class InstantPrintTool(QgsMapTool):
+class InstantPrintDialog(QDialog):
+
+    hidden = pyqtSignal()
+
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
+
+    def hideEvent(self, ev):
+        self.hidden.emit()
+
+
+class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
     def __init__(self, iface, populateCompositionFz=None):
         QgsMapTool.__init__(self, iface.mapCanvas())
@@ -30,9 +41,10 @@ class InstantPrintTool(QgsMapTool):
         self.pressPos = None
         self.populateCompositionFz = populateCompositionFz
 
-        self.dialog = QDialog(self.iface.mainWindow())
+        self.dialog = InstantPrintDialog(self.iface.mainWindow())
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
+        self.dialog.hidden.connect(self.__onDialogHidden)
         self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
         self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QDialogButtonBox.HelpRole)
         self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
@@ -45,24 +57,26 @@ class InstantPrintTool(QgsMapTool):
         self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
         self.exportButton.clicked.connect(self.__export)
         self.helpButton.clicked.connect(self.__help)
-        self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.setEnabled(False))
+        self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
+        self.deactivated.connect(self.__cleanup)
         self.setCursor(Qt.OpenHandCursor)
 
         settings = QSettings()
         if settings.value("instantprint/geometry") is not None:
             self.dialog.restoreGeometry(settings.value("instantprint/geometry"))
 
+    def __onDialogHidden(self):
+        self.setEnabled(False)
+        self.iface.mapCanvas().unsetMapTool(self)
+        QSettings().setValue("geometry", self.dialog.saveGeometry())
+
     def setEnabled(self, enabled):
         if enabled:
             self.dialog.setVisible(True)
             self.__reloadComposers()
-            self.__selectComposer()
             self.iface.mapCanvas().setMapTool(self)
         else:
-            self.dialog.setVisible(False)
-            self.__cleanup()
             self.iface.mapCanvas().unsetMapTool(self)
-            QSettings().setValue("instantprint/geometry", self.dialog.saveGeometry())
 
     def __changeScale(self):
         if not self.mapitem:
