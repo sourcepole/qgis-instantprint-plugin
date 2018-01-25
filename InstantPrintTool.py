@@ -21,8 +21,8 @@ class InstantPrintDialog(QDialog):
 
     hidden = pyqtSignal()
 
-    def __init__(self):
-        QDialog.__init__(self)
+    def __init__(self, parent):
+        QDialog.__init__(self, parent)
 
     def hideEvent(self, ev):
         self.hidden.emit()
@@ -39,7 +39,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.pressPos = None
         self.populateCompositionFz = populateCompositionFz
 
-        self.dialog = InstantPrintDialog()
+        self.dialog = InstantPrintDialog(self.iface.mainWindow())
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
         self.dialog.hidden.connect(self.__onDialogHidden)
