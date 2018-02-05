@@ -11,6 +11,7 @@
 from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QDesktopServices
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
+from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter
 from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
 import os
@@ -39,6 +40,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
+        self.printer = QPrinter()
         self.populateCompositionFz = populateCompositionFz
 
         self.dialog = InstantPrintDialog(self.iface.mainWindow())
@@ -46,6 +48,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.dialogui.setupUi(self.dialog)
         self.dialog.hidden.connect(self.__onDialogHidden)
         self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
+        self.printButton = self.dialogui.buttonBox.addButton(self.tr("Print"), QDialogButtonBox.ActionRole)
         self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QDialogButtonBox.HelpRole)
         self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
         self.dialogui.comboBox_fileformat.addItem("JPG", self.tr("JPG Image (*.jpg);;"))
@@ -56,6 +59,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.iface.layoutDesignerWillBeClosed.connect(self.__reloadComposers)
         self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
         self.exportButton.clicked.connect(self.__export)
+        self.printButton.clicked.connect(self.__print)
         self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
         self.deactivated.connect(self.__cleanup)
@@ -233,6 +237,20 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             success = exporter.exportToImage(filepath[0], QgsLayoutExporter.ImageExportSettings())
         if success != 0:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
+
+    def __print(self):
+        layout_name = self.dialogui.comboBox_composers.currentText()
+        layout_item = self.projectLayoutManager.layoutByName(layout_name)
+        actual_printer = QgsLayoutExporter(layout_item)
+
+        printdialog = QPrintDialog(self.printer)
+        if printdialog.exec_() != QDialog.Accepted:
+            return
+
+        success = actual_printer.print(self.printer, QgsLayoutExporter.PrintExportSettings())
+
+        if success != 0:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the layout."))
 
     def __reloadComposers(self, removed=None):
         if not self.dialog.isVisible():
