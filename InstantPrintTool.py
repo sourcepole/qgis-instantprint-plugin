@@ -37,6 +37,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
+        self.printer = None
         self.populateCompositionFz = populateCompositionFz
 
         self.dialog = InstantPrintDialog(self.iface.mainWindow())
@@ -44,6 +45,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.dialogui.setupUi(self.dialog)
         self.dialog.hidden.connect(self.__onDialogHidden)
         self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
+        self.printButton = self.dialogui.buttonBox.addButton(self.tr("Print"), QDialogButtonBox.ActionRole)
         self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QDialogButtonBox.HelpRole)
         self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
         self.dialogui.comboBox_fileformat.addItem("JPG", self.tr("JPG Image (*.jpg);;"))
@@ -55,6 +57,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.iface.composerWillBeRemoved.connect(self.__reloadComposers)
         self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
         self.exportButton.clicked.connect(self.__export)
+        self.printButton.clicked.connect(self.__print)
         self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
         self.deactivated.connect(self.__cleanup)
@@ -74,6 +77,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.__reloadComposers()
             self.iface.mapCanvas().setMapTool(self)
         else:
+            self.dialog.setVisible(False)
             self.iface.mapCanvas().unsetMapTool(self)
 
     def __changeScale(self):
@@ -236,6 +240,19 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             image = self.composerView.composition().printPageAsRaster(self.composerView.composition().itemPageNumber(self.mapitem))
             if not image.isNull():
                 success = image.save(filename)
+        if not success:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
+
+    def __print(self):
+        if not self.printer:
+            self.printer = QPrinter()
+
+        printdialog = QPrintDialog(self.printer)
+        if printdialog.exec_() != QDialog.Accepted:
+            return
+
+        print_ = getattr(self.composerView.composition(), 'print')
+        success = print_(self.printer)
         if not success:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
 
