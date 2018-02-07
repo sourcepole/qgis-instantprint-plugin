@@ -32,12 +32,16 @@ class Ui_InstantPrintDialog(object):
         InstantPrintDialog.setWindowIcon(icon)
         self.gridLayout = QtWidgets.QGridLayout(InstantPrintDialog)
         self.gridLayout.setObjectName("gridLayout")
-        self.label_composers = QtWidgets.QLabel(InstantPrintDialog)
-        self.label_composers.setObjectName("label_composers")
-        self.gridLayout.addWidget(self.label_composers, 0, 0, 1, 1)
-        self.comboBox_composers = QtWidgets.QComboBox(InstantPrintDialog)
-        self.comboBox_composers.setObjectName("comboBox_composers")
-        self.gridLayout.addWidget(self.comboBox_composers, 0, 1, 1, 1)
+        self.label_layout = QtWidgets.QLabel(InstantPrintDialog)
+        self.label_layout.setObjectName("label_layout")
+        self.gridLayout.addWidget(self.label_layout, 0, 0, 1, 1)
+        self.comboBox_layouts = QtWidgets.QComboBox(InstantPrintDialog)
+        self.comboBox_layouts.setEditable(False)
+        self.comboBox_layouts.setObjectName("comboBox_layouts")
+        self.gridLayout.addWidget(self.comboBox_layouts, 0, 1, 1, 1)
+        self.label = QtWidgets.QLabel(InstantPrintDialog)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
         self.label_fileformat = QtWidgets.QLabel(InstantPrintDialog)
         self.label_fileformat.setObjectName("label_fileformat")
         self.gridLayout.addWidget(self.label_fileformat, 3, 0, 1, 1)
@@ -69,6 +73,8 @@ class Ui_InstantPrintDialog(object):
     def retranslateUi(self, InstantPrintDialog):
         _translate = QtCore.QCoreApplication.translate
         InstantPrintDialog.setWindowTitle(_translate("InstantPrintDialog", "Instant Print"))
-        self.label_composers.setText(_translate("InstantPrintDialog", "Composer:"))
-        self.label_fileformat.setText(_translate("InstantPrintDialog", "File format:"))
+        self.label_layout.setText(_translate("InstantPrintDialog", "Layout:"))
         self.label.setText(_translate("InstantPrintDialog", "Scale:"))
+        self.label_fileformat.setText(_translate("InstantPrintDialog", "File format:"))
+
+from qgis.gui import QgsScaleComboBox

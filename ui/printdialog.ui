@@ -19,14 +19,18 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QLabel" name="label_composers">
+    <widget class="QLabel" name="label_layout">
      <property name="text">
-      <string>Composer:</string>
+      <string>Layout:</string>
      </property>
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="QComboBox" name="comboBox_composers"/>
+    <widget class="QComboBox" name="comboBox_layouts">
+     <property name="editable">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="label_fileformat">

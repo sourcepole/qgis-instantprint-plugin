@@ -10,7 +10,7 @@
     </message>
     <message>
         <location filename="ui/ui_printdialog.py" line="70"/>
-        <source>Composer:</source>
+        <source>Layout:</source>
         <translation type="obsolete">Zusammenstellung:</translation>
     </message>
     <message>
@@ -80,13 +80,13 @@
         <translation>PNG Bild (*.png);;</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="112"/>
-        <source>Invalid composer</source>
-        <translation>Ungültige Druckzusammenstellung</translation>
+        <location filename="../InstantPrintTool.py" line="151"/>
+        <source>Invalid layout</source>
+        <translation>Ungültige Zusammenstellung</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="112"/>
-        <source>The composer must have exactly one map item.</source>
+        <location filename="../InstantPrintTool.py" line="151"/>
+        <source>The layout must have exactly one map item.</source>
         <translation>Die Zusammenstellung muss genau ein Kartenelement haben.</translation>
     </message>
     <message>
