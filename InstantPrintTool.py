@@ -8,11 +8,11 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
-from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal
-from PyQt5.QtGui import QColor, QDesktopServices
+from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale
+from PyQt5.QtGui import QColor, QDesktopServices, QIcon
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
-from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter
+from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, PROJECT_SCALES, QgsLayoutItemMap
 from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
 import os
 from .ui.ui_printdialog import Ui_InstantPrintDialog
@@ -28,6 +28,10 @@ class InstantPrintDialog(QDialog):
     def hideEvent(self, ev):
         self.hidden.emit()
 
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Escape:
+            self.hidden.emit()
+
 
 class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
@@ -41,11 +45,14 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.oldrubberband = None
         self.pressPos = None
         self.printer = QPrinter()
+        self.mapitem = None
         self.populateCompositionFz = populateCompositionFz
 
         self.dialog = InstantPrintDialog(self.iface.mainWindow())
         self.dialogui = Ui_InstantPrintDialog()
         self.dialogui.setupUi(self.dialog)
+        self.dialogui.addScale.setIcon(QIcon(":/images/themes/default/mActionAdd.svg"))
+        self.dialogui.deleteScale.setIcon(QIcon(":/images/themes/default/symbologyRemove.svg"))
         self.dialog.hidden.connect(self.__onDialogHidden)
         self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
         self.printButton = self.dialogui.buttonBox.addButton(self.tr("Print"), QDialogButtonBox.ActionRole)
@@ -63,17 +70,43 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.printButton.clicked.connect(self.__print)
         self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
+        self.dialogui.addScale.clicked.connect(self.add_new_scale)
+        self.dialogui.deleteScale.clicked.connect(self.remove_scale)
         self.deactivated.connect(self.__cleanup)
         self.setCursor(Qt.OpenHandCursor)
 
         settings = QSettings()
         if settings.value("instantprint/geometry") is not None:
             self.dialog.restoreGeometry(settings.value("instantprint/geometry"))
+        if settings.value("instantprint/scales") is not None:
+            for scale in settings.value("instantprint/scales").split(";"):
+                if scale:
+                    self.retrieve_scales(scale)
+        self.check_scales()
 
     def __onDialogHidden(self):
         self.setEnabled(False)
         self.iface.mapCanvas().unsetMapTool(self)
-        QSettings().setValue("geometry", self.dialog.saveGeometry())
+        QSettings().setValue("instantprint/geometry", self.dialog.saveGeometry())
+        list = []
+        for i in range(self.dialogui.comboBox_scale.count()):
+            list.append(self.dialogui.comboBox_scale.itemText(i))
+        QSettings().setValue("instantprint/scales", ";".join(list))
+
+    def retrieve_scales(self, checkScale):
+        if self.dialogui.comboBox_scale.findText(checkScale) == -1:
+            self.dialogui.comboBox_scale.addItem(checkScale)
+
+    def add_new_scale(self):
+        new_layout = self.dialogui.comboBox_scale.currentText()
+        if self.dialogui.comboBox_scale.findText(new_layout) == -1:
+            self.dialogui.comboBox_scale.addItem(new_layout)
+        self.check_scales()
+
+    def remove_scale(self):
+        layout_to_delete = self.dialogui.comboBox_scale.currentIndex()
+        self.dialogui.comboBox_scale.removeItem(layout_to_delete)
+        self.check_scales()
 
     def setEnabled(self, enabled):
         if enabled:
@@ -81,12 +114,15 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.__reloadLayouts()
             self.iface.mapCanvas().setMapTool(self)
         else:
+            self.dialog.setVisible(False)
             self.iface.mapCanvas().unsetMapTool(self)
 
     def __changeScale(self):
         if not self.mapitem:
             return
         newscale = self.dialogui.comboBox_scale.scale()
+        if abs(newscale) < 1E-6:
+            return
         extent = self.mapitem.extent()
         center = extent.center()
         newwidth = extent.width() / self.mapitem.scale() * newscale
@@ -97,6 +133,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         y2 = center.y() + 0.5 * newheight
         self.mapitem.setExtent(QgsRectangle(x1, y1, x2, y2))
         self.__createRubberBand()
+        self.check_scales()
 
     def __selectLayout(self):
         if not self.dialog.isVisible():
@@ -107,9 +144,11 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
 
         layoutView = self.dialogui.comboBox_layouts.itemData(activeIndex)
         maps = []
-        itemName = self.dialogui.comboBox_composers.currentText()
-        item = self.projectLayoutManager.layoutByName(itemName)
-        maps.append(item)
+        layout_name = self.dialogui.comboBox_layouts.currentText()
+        layout = self.projectLayoutManager.layoutByName(layout_name)
+        for item in layoutView.items():
+            if isinstance(item, QgsLayoutItemMap):
+                maps.append(item)
         if len(maps) != 1:
             QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid layout"), self.tr("The layout must have exactly one map item."))
             self.exportButton.setEnabled(False)
@@ -285,3 +324,41 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def __help(self):
         manualPath = os.path.join(os.path.dirname(__file__), "help", "documentation.pdf")
         QDesktopServices.openUrl(QUrl.fromLocalFile(manualPath))
+
+    def scaleFromString(self, scaleText):
+        locale = QLocale()
+        parts = [locale.toInt(part) for part in scaleText.split(":")]
+        try:
+            if len(parts) == 2 and parts[0][1] and parts[1][1] and parts[0][0] != 0 and parts[1][0] != 0:
+                return float(parts[0][0]) / float(parts[1][0])
+            else:
+                return None
+        except ZeroDivisionError:
+            return
+
+    def check_scales(self):
+        predefScalesStr = QSettings().value("Map/scales", PROJECT_SCALES).split(",")
+        predefScales = [self.scaleFromString(scaleString) for scaleString in predefScalesStr]
+
+        comboScalesStr = [self.dialogui.comboBox_scale.itemText(i) for i in range(self.dialogui.comboBox_scale.count())]
+        comboScales = [self.scaleFromString(scaleString) for scaleString in comboScalesStr]
+
+        currentScale = self.scaleFromString(self.dialogui.comboBox_scale.currentText())
+
+        if not currentScale:
+            self.dialogui.comboBox_scale.lineEdit().setStyleSheet("background: #FF7777; color: #FFFFFF;")
+            self.dialogui.addScale.setVisible(True)
+            self.dialogui.addScale.setEnabled(False)
+            self.dialogui.deleteScale.setVisible(False)
+        else:
+            self.dialogui.comboBox_scale.lineEdit().setStyleSheet("")
+            if currentScale in comboScales:
+                # If entry scale is already in the list, allow removing it unless it is a predefined scale
+                self.dialogui.addScale.setVisible(False)
+                self.dialogui.deleteScale.setVisible(True)
+                self.dialogui.deleteScale.setEnabled(currentScale not in predefScales)
+            else:
+                # Otherwise, show button to add it
+                self.dialogui.addScale.setVisible(True)
+                self.dialogui.addScale.setEnabled(True)
+                self.dialogui.deleteScale.setVisible(False)

@@ -10,8 +10,5 @@
 
 
 def classFactory(iface):
-    try:
-        from InstantPrintPlugin import InstantPrintPlugin
-    except:
-        from .InstantPrintPlugin import InstantPrintPlugin
+    from .InstantPrintPlugin import InstantPrintPlugin
     return InstantPrintPlugin(iface)
