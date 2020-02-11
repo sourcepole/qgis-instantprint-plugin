@@ -8,17 +8,14 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
-##TODO: set rotation value back to zero when scale changed AND on canvas move event
-##TODO: listen for signal when use_rotation_combobox value changed, to set mapitem rotation correctly
-
-from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale
-from PyQt5.QtGui import QColor, QDesktopServices, QIcon
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
-from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
-from qgis.core import QgsRectangle, QgsGeometry, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, PROJECT_SCALES, QgsLayoutItemMap
-from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from qgis.core import *
+from qgis.gui import *
 import os
-from .ui.ui_printdialog import Ui_InstantPrintDialog
+import math
+
+from ui.ui_printdialog import Ui_InstantPrintDialog
 
 
 class InstantPrintDialog(QDialog):
@@ -42,12 +39,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         QgsMapTool.__init__(self, iface.mapCanvas())
 
         self.iface = iface
-        projectInstance = QgsProject.instance()
-        self.projectLayoutManager = projectInstance.layoutManager()
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
-        self.printer = QPrinter()
+        self.printer = None
         self.mapitem = None
         self.populateCompositionFz = populateCompositionFz
         ### Ben Wirf 6/2/2020
@@ -62,6 +57,19 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
         self.printButton = self.dialogui.buttonBox.addButton(self.tr("Print"), QDialogButtonBox.ActionRole)
         self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QDialogButtonBox.HelpRole)
+        self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
+        self.dialogui.comboBox_fileformat.addItem("JPG", self.tr("JPG Image (*.jpg);;"))
+        self.dialogui.comboBox_fileformat.addItem("BMP", self.tr("BMP Image (*.bmp);;"))
+        self.dialogui.comboBox_fileformat.addItem("PNG", self.tr("PNG Image (*.png);;"))
+
+        self.iface.composerAdded.connect(lambda view: self.__reloadComposers())
+        self.iface.composerWillBeRemoved.connect(self.__reloadComposers)
+        self.dialogui.comboBox_composers.currentIndexChanged.connect(self.__selectComposer)
+        self.dialogui.comboBox_scale.lineEdit().textChanged.connect(self.__changeScale)
+        self.dialogui.comboBox_scale.scaleChanged.connect(self.__changeScale)
+        self.exportButton.clicked.connect(self.__export)
+        self.printButton.clicked.connect(self.__print)
+        self.helpButton.clicked.connect(self.__help)
         ### Ben Wirf 6/2/2020
         self.dialogui.comboBox_useRotation.setEnabled(False)
         self.dialogui.spinBox_rotation.setRange(-180, 180)
@@ -70,21 +78,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.dialogui.comboBox_useRotation.addItem("Rotate entire layout map item")
         self.dialogui.comboBox_useRotation.currentIndexChanged.connect(self._setLayoutRotationSettings)
         ###
-        self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
-        self.dialogui.comboBox_fileformat.addItem("JPG", self.tr("JPG Image (*.jpg);;"))
-        self.dialogui.comboBox_fileformat.addItem("BMP", self.tr("BMP Image (*.bmp);;"))
-        self.dialogui.comboBox_fileformat.addItem("PNG", self.tr("PNG Image (*.png);;"))
-        self.iface.layoutDesignerOpened.connect(lambda view: self.__reloadLayouts())
-        self.iface.layoutDesignerWillBeClosed.connect(self.__reloadLayouts)
-        self.dialogui.comboBox_layouts.currentIndexChanged.connect(self.__selectLayout)
-        self.dialogui.comboBox_scale.lineEdit().textChanged.connect(self.__changeScale)
-        self.dialogui.comboBox_scale.scaleChanged.connect(self.__changeScale)
-        self.exportButton.clicked.connect(self.__export)
-        self.printButton.clicked.connect(self.__print)
-        self.helpButton.clicked.connect(self.__help)
         self.dialogui.buttonBox.button(QDialogButtonBox.Close).clicked.connect(lambda: self.dialog.hide())
-        self.dialogui.addScale.clicked.connect(self.add_new_scale)
-        self.dialogui.deleteScale.clicked.connect(self.remove_scale)
+        self.dialogui.addScale.clicked.connect(self.__addItems)
+        self.dialogui.deleteScale.clicked.connect(self.__deleteItems)
         self.deactivated.connect(self.__cleanup)
         self.setCursor(Qt.OpenHandCursor)
 
@@ -94,41 +90,40 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if settings.value("instantprint/scales") is not None:
             for scale in settings.value("instantprint/scales").split(";"):
                 if scale:
-                    self.retrieve_scales(scale)
+                    self.addItem(scale)
         self.check_scales()
 
     def __onDialogHidden(self):
         self.setEnabled(False)
-        self.iface.mapCanvas().unsetMapTool(self)
-        ### Ben Wirf 6/2/2020
-        self.iface.actionPan().trigger()
-        self.dialogui.spinBox_rotation.setValue(0)
-        ###
         QSettings().setValue("instantprint/geometry", self.dialog.saveGeometry())
         list = []
         for i in range(self.dialogui.comboBox_scale.count()):
             list.append(self.dialogui.comboBox_scale.itemText(i))
+        ### Ben Wirf 6/2/2020
+        self.iface.actionPan().trigger()
+        self.dialogui.spinBox_rotation.setValue(0)
+        ###
         QSettings().setValue("instantprint/scales", ";".join(list))
 
-    def retrieve_scales(self, checkScale):
+    def addItem(self, checkScale):
         if self.dialogui.comboBox_scale.findText(checkScale) == -1:
             self.dialogui.comboBox_scale.addItem(checkScale)
 
-    def add_new_scale(self):
-        new_layout = self.dialogui.comboBox_scale.currentText()
-        if self.dialogui.comboBox_scale.findText(new_layout) == -1:
-            self.dialogui.comboBox_scale.addItem(new_layout)
+    def __addItems(self):
+        newScale = self.dialogui.comboBox_scale.currentText()
+        if self.dialogui.comboBox_scale.findText(newScale) == -1:
+            self.dialogui.comboBox_scale.addItem(newScale)
         self.check_scales()
 
-    def remove_scale(self):
-        layout_to_delete = self.dialogui.comboBox_scale.currentIndex()
-        self.dialogui.comboBox_scale.removeItem(layout_to_delete)
+    def __deleteItems(self):
+        delitem = self.dialogui.comboBox_scale.currentIndex()
+        self.dialogui.comboBox_scale.removeItem(delitem)
         self.check_scales()
 
     def setEnabled(self, enabled):
         if enabled:
             self.dialog.setVisible(True)
-            self.__reloadLayouts()
+            self.__reloadComposers()
             self.iface.mapCanvas().setMapTool(self)
         else:
             self.dialog.setVisible(False)
@@ -140,9 +135,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         ###
         if not self.mapitem:
             return
-        newscale = self.dialogui.comboBox_scale.scale()
-        if abs(newscale) < 1E-6:
+        scaledenom = self.dialogui.comboBox_scale.scale()
+        if math.isinf(scaledenom) or math.isnan(scaledenom) or abs(scaledenom) < 1E-6:
             return
+        newscale = 1. / scaledenom
         extent = self.mapitem.extent()
         center = extent.center()
         newwidth = extent.width() / self.mapitem.scale() * newscale
@@ -151,26 +147,28 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         y1 = center.y() - 0.5 * newheight
         x2 = center.x() + 0.5 * newwidth
         y2 = center.y() + 0.5 * newheight
-        self.mapitem.setExtent(QgsRectangle(x1, y1, x2, y2))
+        self.mapitem.setNewExtent(QgsRectangle(x1, y1, x2, y2))
         self.__createRubberBand()
         self.check_scales()
 
-    def __selectLayout(self):
+    def __selectComposer(self):
         if not self.dialog.isVisible():
             return
-        activeIndex = self.dialogui.comboBox_layouts.currentIndex()
+        activeIndex = self.dialogui.comboBox_composers.currentIndex()
         if activeIndex < 0:
             return
 
-        layoutView = self.dialogui.comboBox_layouts.itemData(activeIndex)
-        maps = []
-        layout_name = self.dialogui.comboBox_layouts.currentText()
-        layout = self.projectLayoutManager.layoutByName(layout_name)
-        for item in layoutView.items():
-            if isinstance(item, QgsLayoutItemMap):
-                maps.append(item)
+        composerView = self.dialogui.comboBox_composers.itemData(activeIndex)
+        try:
+            maps = composerView.composition().composerMapItems()
+        except Exception:
+            # composerMapItems is not available with PyQt4 < 4.8.4
+            maps = []
+            for item in composerView.composition().items():
+                if isinstance(item, QgsComposerMap):
+                    maps.append(item)
         if len(maps) != 1:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid layout"), self.tr("The layout must have exactly one map item."))
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Invalid composer"), self.tr("The composer must have exactly one map item."))
             self.exportButton.setEnabled(False)
             self.iface.mapCanvas().scene().removeItem(self.rubberband)
             self.rubberband = None
@@ -180,9 +178,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.dialogui.comboBox_scale.setEnabled(True)
         self.exportButton.setEnabled(True)
 
-        self.layoutView = layoutView
-        self.mapitem = layout.referenceMap()
-        self.dialogui.comboBox_scale.setScale(self.mapitem.scale())
+        self.composerView = composerView
+        self.mapitem = maps[0]
+        self.dialogui.comboBox_scale.setScale(1 / self.mapitem.scale())
         self.__createRubberBand()
 
     def __createRubberBand(self):
@@ -191,8 +189,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         center = self.iface.mapCanvas().extent().center()
         self.corner = QPointF(center.x() - 0.5 * extent.width(), center.y() - 0.5 * extent.height())
         self.rect = QRectF(self.corner.x(), self.corner.y(), extent.width(), extent.height())
-        self.mapitem.setExtent(QgsRectangle(self.rect))
-        self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
+        self.mapitem.setNewExtent(QgsRectangle(self.rect))
+
+        self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
         self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
         self.rubberband.setColor(QColor(127, 127, 255, 127))
 
@@ -206,7 +205,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
-        
+
     def _rotationChanged(self, value):
         '''Ben Wirf 6/2/2020 added this method'''
         self.rotation_value = value
@@ -217,19 +216,19 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if self.rubberband:
             geom = QgsGeometry().fromRect(QgsRectangle(self.rect))
             geom.rotate(self.rotation_value, geom.centroid().asPoint())
-            self.rubberband.setToGeometry(geom)
+            self.rubberband.setToGeometry(geom,None)
         self._setLayoutRotationSettings()
-            
+
     def _setLayoutRotationSettings(self):
         '''Ben Wirf 6/2/2020 added this method'''
         if self.mapitem:
             if self.dialogui.comboBox_useRotation.currentIndex() == 0:
-                self.mapitem.setMapRotation(float(0-self.rotation_value))
+                self.mapitem.setMapRotation(float(0 - self.rotation_value))
                 self.mapitem.setItemRotation(0.0)
             elif self.dialogui.comboBox_useRotation.currentIndex() == 1:
-                self.mapitem.setItemRotation(float(self.rotation_value), adjustPosition = True)
+                self.mapitem.setItemRotation(float(self.rotation_value), adjustPosition=True)
                 self.mapitem.setMapRotation(0.0)
-    
+
     def canvasPressEvent(self, e):
         if not self.rubberband:
             return
@@ -239,7 +238,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.dialogui.spinBox_rotation.setValue(0)
             ###
             self.oldrect = QRectF(self.rect)
-            self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
+            self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QGis.Polygon)
             self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
             self.oldrubberband.setColor(QColor(127, 127, 255, 31))
             self.pressPos = (e.x(), e.y())
@@ -288,7 +287,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.iface.mapCanvas().scene().removeItem(self.oldrubberband)
             self.oldrect = None
             self.oldrubberband = None
-            self.mapitem.setExtent(QgsRectangle(self.rect))
+            self.mapitem.setNewExtent(QgsRectangle(self.rect))
 
     def __canvasRect(self, rect):
         mtp = self.iface.mapCanvas().mapSettings().mapToPixel()
@@ -299,72 +298,71 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def __export(self):
         settings = QSettings()
         format = self.dialogui.comboBox_fileformat.itemData(self.dialogui.comboBox_fileformat.currentIndex())
-        filepath = QFileDialog.getSaveFileName(
+        filename = QFileDialog.getSaveFileName(
             self.iface.mainWindow(),
-            self.tr("Export Layout"),
+            self.tr("Print Composition"),
             settings.value("/instantprint/lastfile", ""),
             format
         )
-        if not all(filepath):
+        if not filename:
             return
 
         # Ensure output filename has correct extension
-        filename = os.path.splitext(filepath[0])[0] + "." + self.dialogui.comboBox_fileformat.currentText().lower()
-        settings.setValue("/instantprint/lastfile", filepath[0])
+        filename = os.path.splitext(filename)[0] + "." + self.dialogui.comboBox_fileformat.currentText().lower()
+
+        settings.setValue("/instantprint/lastfile", filename)
 
         if self.populateCompositionFz:
-            self.populateCompositionFz(self.layoutView.composition())
+            self.populateCompositionFz(self.composerView.composition())
 
         success = False
-        layout_name = self.dialogui.comboBox_layouts.currentText()
-        layout_item = self.projectLayoutManager.layoutByName(layout_name)
-        exporter = QgsLayoutExporter(layout_item)
         if filename[-3:].lower() == u"pdf":
-            success = exporter.exportToPdf(filepath[0], QgsLayoutExporter.PdfExportSettings())
+            success = self.composerView.composition().exportAsPDF(filename)
         else:
-            success = exporter.exportToImage(filepath[0], QgsLayoutExporter.ImageExportSettings())
-        if success != 0:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Export Failed"), self.tr("Failed to export the layout."))
+            image = self.composerView.composition().printPageAsRaster(self.composerView.composition().itemPageNumber(self.mapitem))
+            if not image.isNull():
+                success = image.save(filename)
+        if not success:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
 
     def __print(self):
-        layout_name = self.dialogui.comboBox_layouts.currentText()
-        layout_item = self.projectLayoutManager.layoutByName(layout_name)
-        actual_printer = QgsLayoutExporter(layout_item)
+        if not self.printer:
+            self.printer = QPrinter()
 
         printdialog = QPrintDialog(self.printer)
         if printdialog.exec_() != QDialog.Accepted:
             return
 
-        success = actual_printer.print(self.printer, QgsLayoutExporter.PrintExportSettings())
+        print_ = getattr(self.composerView.composition(), 'print')
+        success = print_(self.printer)
+        if not success:
+            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the composition."))
 
-        if success != 0:
-            QMessageBox.warning(self.iface.mainWindow(), self.tr("Print Failed"), self.tr("Failed to print the layout."))
-
-    def __reloadLayouts(self, removed=None):
+    def __reloadComposers(self, removed=None):
         if not self.dialog.isVisible():
             # Make it less likely to hit the issue outlined in https://github.com/qgis/QGIS/pull/1938
             return
-        
+
         ### Ben Wirf 6/2/2020
         self.dialogui.spinBox_rotation.setValue(0)
         ###
-        
-        self.dialogui.comboBox_layouts.blockSignals(True)
+
+        self.dialogui.comboBox_composers.blockSignals(True)
         prev = None
-        if self.dialogui.comboBox_layouts.currentIndex() >= 0:
-            prev = self.dialogui.comboBox_layouts.currentText()
-        self.dialogui.comboBox_layouts.clear()
+        if self.dialogui.comboBox_composers.currentIndex() >= 0:
+            prev = self.dialogui.comboBox_composers.currentText()
+        self.dialogui.comboBox_composers.clear()
         active = 0
-        for layout in self.projectLayoutManager.layouts():
-            if layout != removed and layout.name():
-                cur = layout.name()
-                self.dialogui.comboBox_layouts.addItem(cur, layout)
+        for composer in self.iface.activeComposers():
+            if composer != removed and composer.composerWindow():
+                cur = composer.composerWindow().windowTitle()
+                self.dialogui.comboBox_composers.addItem(cur, composer)
                 if prev == cur:
-                    active = self.dialogui.comboBox_layouts.count() - 1
-        self.dialogui.comboBox_layouts.setCurrentIndex(-1)  # Ensure setCurrentIndex below actually changes an index
-        self.dialogui.comboBox_layouts.blockSignals(False)
-        if self.dialogui.comboBox_layouts.count() > 0:
-            self.dialogui.comboBox_layouts.setCurrentIndex(active)
+                    active = self.dialogui.comboBox_composers.count() - 1
+        self.dialogui.comboBox_composers.setCurrentIndex(-1)  # Ensure setCurrentIndex below actually changes an index
+        self.dialogui.comboBox_composers.blockSignals(False)
+        if self.dialogui.comboBox_composers.count() > 0:
+            self.dialogui.comboBox_composers.setCurrentIndex(active)
             self.dialogui.comboBox_scale.setEnabled(True)
             self.exportButton.setEnabled(True)
         else:
@@ -378,13 +376,11 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def scaleFromString(self, scaleText):
         locale = QLocale()
         parts = [locale.toInt(part) for part in scaleText.split(":")]
-        try:
-            if len(parts) == 2 and parts[0][1] and parts[1][1] and parts[0][0] != 0 and parts[1][0] != 0:
-                return float(parts[0][0]) / float(parts[1][0])
-            else:
-                return None
-        except ZeroDivisionError:
-            return
+        # catch 0 Division
+        if len(parts) == 2 and parts[0][1] and parts[1][1] and parts[0][0] != 0 and parts[1][0] != 0:
+            return float(parts[0][0]) / float(parts[1][0])
+        else:
+            return None
 
     def check_scales(self):
         predefScalesStr = QSettings().value("Map/scales", PROJECT_SCALES).split(",")
