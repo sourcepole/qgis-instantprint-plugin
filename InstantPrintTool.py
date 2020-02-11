@@ -8,11 +8,14 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
+##TODO: set rotation value back to zero when scale changed AND on canvas move event
+##TODO: listen for signal when use_rotation_combobox value changed, to set mapitem rotation correctly
+
 from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale
 from PyQt5.QtGui import QColor, QDesktopServices, QIcon
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
-from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, PROJECT_SCALES, QgsLayoutItemMap
+from qgis.core import QgsRectangle, QgsGeometry, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, PROJECT_SCALES, QgsLayoutItemMap
 from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
 import os
 from .ui.ui_printdialog import Ui_InstantPrintDialog
@@ -47,6 +50,8 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.printer = QPrinter()
         self.mapitem = None
         self.populateCompositionFz = populateCompositionFz
+        ### Ben Wirf 6/2/2020
+        self.rotation_value = None
 
         self.dialog = InstantPrintDialog(self.iface.mainWindow())
         self.dialogui = Ui_InstantPrintDialog()
@@ -57,6 +62,14 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.exportButton = self.dialogui.buttonBox.addButton(self.tr("Export"), QDialogButtonBox.ActionRole)
         self.printButton = self.dialogui.buttonBox.addButton(self.tr("Print"), QDialogButtonBox.ActionRole)
         self.helpButton = self.dialogui.buttonBox.addButton(self.tr("Help"), QDialogButtonBox.HelpRole)
+        ### Ben Wirf 6/2/2020
+        self.dialogui.comboBox_useRotation.setEnabled(False)
+        self.dialogui.spinBox_rotation.setRange(-180, 180)
+        self.dialogui.spinBox_rotation.valueChanged.connect(self._rotationChanged)
+        self.dialogui.comboBox_useRotation.addItem("Rotate background map in layout")
+        self.dialogui.comboBox_useRotation.addItem("Rotate entire layout map item")
+        self.dialogui.comboBox_useRotation.currentIndexChanged.connect(self._setLayoutRotationSettings)
+        ###
         self.dialogui.comboBox_fileformat.addItem("PDF", self.tr("PDF Document (*.pdf);;"))
         self.dialogui.comboBox_fileformat.addItem("JPG", self.tr("JPG Image (*.jpg);;"))
         self.dialogui.comboBox_fileformat.addItem("BMP", self.tr("BMP Image (*.bmp);;"))
@@ -87,6 +100,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def __onDialogHidden(self):
         self.setEnabled(False)
         self.iface.mapCanvas().unsetMapTool(self)
+        ### Ben Wirf 6/2/2020
+        self.iface.actionPan().trigger()
+        self.dialogui.spinBox_rotation.setValue(0)
+        ###
         QSettings().setValue("instantprint/geometry", self.dialog.saveGeometry())
         list = []
         for i in range(self.dialogui.comboBox_scale.count()):
@@ -118,6 +135,9 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.iface.mapCanvas().unsetMapTool(self)
 
     def __changeScale(self):
+        ### Ben Wirf 6/2/2020
+        self.dialogui.spinBox_rotation.setValue(0)
+        ###
         if not self.mapitem:
             return
         newscale = self.dialogui.comboBox_scale.scale()
@@ -186,12 +206,38 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.rubberband = None
         self.oldrubberband = None
         self.pressPos = None
-
+        
+    def _rotationChanged(self, value):
+        '''Ben Wirf 6/2/2020 added this method'''
+        self.rotation_value = value
+        if self.rotation_value == 0:
+            self.dialogui.comboBox_useRotation.setEnabled(False)
+        else:
+            self.dialogui.comboBox_useRotation.setEnabled(True)
+        if self.rubberband:
+            geom = QgsGeometry().fromRect(QgsRectangle(self.rect))
+            geom.rotate(self.rotation_value, geom.centroid().asPoint())
+            self.rubberband.setToGeometry(geom)
+        self._setLayoutRotationSettings()
+            
+    def _setLayoutRotationSettings(self):
+        '''Ben Wirf 6/2/2020 added this method'''
+        if self.mapitem:
+            if self.dialogui.comboBox_useRotation.currentIndex() == 0:
+                self.mapitem.setMapRotation(float(0-self.rotation_value))
+                self.mapitem.setItemRotation(0.0)
+            elif self.dialogui.comboBox_useRotation.currentIndex() == 1:
+                self.mapitem.setItemRotation(float(self.rotation_value), adjustPosition = True)
+                self.mapitem.setMapRotation(0.0)
+    
     def canvasPressEvent(self, e):
         if not self.rubberband:
             return
         r = self.__canvasRect(self.rect)
         if e.button() == Qt.LeftButton and self.__canvasRect(self.rect).contains(e.pos()):
+            ### Ben Wirf 6/2/2020
+            self.dialogui.spinBox_rotation.setValue(0)
+            ###
             self.oldrect = QRectF(self.rect)
             self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
             self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
@@ -298,7 +344,11 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if not self.dialog.isVisible():
             # Make it less likely to hit the issue outlined in https://github.com/qgis/QGIS/pull/1938
             return
-
+        
+        ### Ben Wirf 6/2/2020
+        self.dialogui.spinBox_rotation.setValue(0)
+        ###
+        
         self.dialogui.comboBox_layouts.blockSignals(True)
         prev = None
         if self.dialogui.comboBox_layouts.currentIndex() >= 0:
