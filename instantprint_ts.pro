@@ -5,4 +5,5 @@ SOURCES += \
 
 
 TRANSLATIONS += i18n/instantprint_de.ts \
-                i18n/instantprint_it.ts
+                i18n/instantprint_it.ts \
+                i18n/instantprint_ja.ts
