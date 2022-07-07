@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="de" sourcelanguage="">
+<!DOCTYPE TS>
+<TS version="2.1" language="de">
 <context>
     <name>InstantPrintDialog</name>
     <message>
-        <location filename="ui/ui_printdialog.py" line="69"/>
         <source>Instant Print</source>
         <translation type="obsolete">Sofortdruck</translation>
     </message>
     <message>
-        <location filename="ui/ui_printdialog.py" line="70"/>
         <source>Layout:</source>
         <translation type="obsolete">Zusammenstellung:</translation>
     </message>
     <message>
-        <location filename="ui/ui_printdialog.py" line="71"/>
         <source>File format:</source>
         <translation type="obsolete">Dateiformat:</translation>
     </message>
     <message>
-        <location filename="ui/ui_printdialog.py" line="72"/>
         <source>Scale:</source>
         <translation type="obsolete">Skala:</translation>
     </message>
@@ -26,20 +23,20 @@
 <context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="InstantPrintPlugin.py" line="42"/>
+        <location filename="../InstantPrintPlugin.py" line="41"/>
+        <location filename="../InstantPrintPlugin.py" line="42"/>
         <source>Instant Print</source>
-        <translation type="obsolete">Sofortdruck</translation>
+        <translation type="unfinished">Sofortdruck</translation>
     </message>
 </context>
 <context>
     <name>InstantPrintTool</name>
     <message>
-        <location filename="../InstantPrintTool.py" line="255"/>
         <source>Print Composition</source>
         <translation type="obsolete">Zusammenstellung drucken</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="293"/>
+        <location filename="../InstantPrintTool.py" line="295"/>
         <source>Print Failed</source>
         <translation>Das Drucken ist gescheitert</translation>
     </message>
@@ -79,42 +76,37 @@
         <translation>PNG Bild (*.jpg);;</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="151"/>
+        <location filename="../InstantPrintTool.py" line="153"/>
         <source>Invalid layout</source>
         <translation>Ungültige Zusammenstellung</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="151"/>
+        <location filename="../InstantPrintTool.py" line="153"/>
         <source>The layout must have exactly one map item.</source>
         <translation>Die Zusammenstellung muss genau ein Kartenelement haben.</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="280"/>
         <source>Failed to print the composition.</source>
         <translation type="obsolete">Das Drucken der Zusammenstellung war nicht erfolgreich.</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="293"/>
+        <location filename="../InstantPrintTool.py" line="295"/>
         <source>Failed to print the layout.</source>
         <translation>Das Drucken der Zusammenstellung war nicht erfolgreich.</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="335"/>
         <source>Cannot delete default scale</source>
         <translation type="obsolete">Die Standart Skala kann nicht gelöscht</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="341"/>
         <source>Delete scale</source>
         <translation type="obsolete">Skala löschen</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="345"/>
         <source>Add new scale</source>
         <translation type="obsolete">Skala hinzufügen</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="350"/>
         <source>Cannot add invalid Scale
 Format: 1:number
 Only whole numbers allowed
@@ -125,17 +117,17 @@ Nur ganze Zahlen erlaubt
 Keine Sonderzeichen erlaubt</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="254"/>
+        <location filename="../InstantPrintTool.py" line="258"/>
         <source>Export Layout</source>
         <translation>Zusammenstellung exportieren</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="279"/>
+        <location filename="../InstantPrintTool.py" line="281"/>
         <source>Export Failed</source>
         <translation>Das Exportieren war nicht erfolgreich</translation>
     </message>
     <message>
-        <location filename="../InstantPrintTool.py" line="279"/>
+        <location filename="../InstantPrintTool.py" line="281"/>
         <source>Failed to export the layout.</source>
         <translation>Das Exportieren Der Zusammenstellung konnte  war nicht erfolgreich.</translation>
     </message>
