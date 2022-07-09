@@ -31,8 +31,8 @@
 <context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="../InstantPrintPlugin.py" line="40"/>
-        <location filename="../InstantPrintPlugin.py" line="41"/>
+        <location filename="../InstantPrintPlugin.py" line="42"/>
+        <location filename="../InstantPrintPlugin.py" line="43"/>
         <source>Instant Print</source>
         <translation>Stampa instantanea</translation>
     </message>
