@@ -17,7 +17,6 @@ import os
 from .InstantPrintTool import InstantPrintTool
 from . import resources_rc
 
-
 class InstantPrintPlugin(QObject):
     def __init__(self, iface):
         QObject.__init__(self)
@@ -26,21 +25,15 @@ class InstantPrintPlugin(QObject):
         self.pluginDir = os.path.dirname(__file__)
         self.tool = InstantPrintTool(self.iface)
 
-        # Localize
-        # default "en" 2022-07-09
-        try:
-            locale = QSettings().value("locale/userLocale", "en", type=str)[0:2]
-        except Exception:
-            locale = "en"
-        
-        
+        # initialize locale
+        locale = QSettings().value('locale/userLocale')[0:2]
         localePath = os.path.join(self.pluginDir, 'i18n', 'instantprint_{}.qm'.format(locale))
-
-        if os.path.exists(localePath):
+          
+        if os.path.exists(locale_path):
             self.translator = QTranslator()
-            self.translator.load(localePath)
+            self.translator.load(locale_path)
             QCoreApplication.installTranslator(self.translator)
-
+            
     def initGui(self):
         self.toolButton = QToolButton(self.iface.mapNavToolToolBar())
         self.toolButton.setIcon(QIcon(":/plugins/instantprint/icons/icon.png"))

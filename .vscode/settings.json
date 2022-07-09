@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "i18n"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

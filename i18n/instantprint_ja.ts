@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ja_JP">
+<TS version="2.1" language="ja">
 <context>
     <name>InstantPrintDialog</name>
     <message>
@@ -27,8 +27,8 @@
 <context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="../InstantPrintPlugin.py" line="47"/>
-        <location filename="../InstantPrintPlugin.py" line="48"/>
+        <location filename="../InstantPrintPlugin.py" line="40"/>
+        <location filename="../InstantPrintPlugin.py" line="41"/>
         <source>Instant Print</source>
         <translation>簡単印刷</translation>
     </message>
