@@ -15,7 +15,7 @@ from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
 from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, PROJECT_SCALES, QgsLayoutItemMap
 from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
 import os
-from .ui.ui_printdialog import Ui_InstantPrintDialog
+from .instantprint_dialog import Ui_InstantPrintDialog
 
 
 class InstantPrintDialog(QDialog):

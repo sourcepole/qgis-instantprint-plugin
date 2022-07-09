@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-
+import os
 
-# Form implementation generated from reading ui file 'ui/printdialog.ui'
-#
-# Created by: PyQt5 UI code generator 5.9.1
-#
-# WARNING! All changes made in this file will be lost!
+from qgis.PyQt import uic
+from qgis.PyQt import QtCore, QtGui, QtWidgets
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+# This loads your .ui file so that PyQt can populate your plugin with the elements from Qt Designer
+FORM_CLASS, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'instantprint_dialog_base.ui'))
 
-class Ui_InstantPrintDialog(object):
+#class Ui_InstantPrintDialog(object):
+class Ui_InstantPrintDialog(QtWidgets.QDialog, FORM_CLASS):
+
     def setupUi(self, InstantPrintDialog):
         InstantPrintDialog.setObjectName("InstantPrintDialog")
         InstantPrintDialog.resize(357, 157)
