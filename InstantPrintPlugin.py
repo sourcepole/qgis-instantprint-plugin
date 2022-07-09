@@ -27,7 +27,13 @@ class InstantPrintPlugin(QObject):
         self.tool = InstantPrintTool(self.iface)
 
         # Localize
-        locale = QSettings().value("locale/userLocale")[0:2]
+        # default "en" 2022-07-09
+        try:
+            locale = QSettings().value("locale/userLocale", "en", type=str)[0:2]
+        except Exception:
+            locale = "en"
+        
+        
         localePath = os.path.join(self.pluginDir, 'i18n', 'instantprint_{}.qm'.format(locale))
 
         if os.path.exists(localePath):
