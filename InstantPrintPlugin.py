@@ -29,7 +29,7 @@ class InstantPrintPlugin(QObject):
         locale = QSettings().value('locale/userLocale')[0:2]
         localePath = os.path.join(self.pluginDir, 'i18n', 'instantprint_{}.qm'.format(locale))
           
-        if os.path.exists(locale_path):
+        if os.path.exists(localepath):
             self.translator = QTranslator()
             self.translator.load(localepath)
             QCoreApplication.installTranslator(self.translator)
