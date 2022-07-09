@@ -8,14 +8,26 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
+
 from qgis.core import Qgis
 from PyQt5.QtCore import QObject, QSettings, QTranslator, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QToolButton
 from qgis.gui import QgisInterface
 import os.path
+
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QAction
+
+# Initialize Qt resources from file resources.py
+from .resources import *
+# Import the code for the dialog
+from .ui.ui_printdialog import ui_printdialog
+import os.path
+
 from .InstantPrintTool import InstantPrintTool
-from . import resources_rc
+#from . import resources_rc
 
 class InstantPrintPlugin(QObject):
     def __init__(self, iface):
