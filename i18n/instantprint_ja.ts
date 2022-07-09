@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ja">
+<TS version="2.1" language="ja_JP">
+<context>
+    <name>InstantPrintDialog</name>
+    <message>
+        <location filename="../ui/printdialog.ui" line="14"/>
+        <source>Instant Print</source>
+        <translation>簡単印刷</translation>
+    </message>
+    <message>
+        <location filename="../ui/printdialog.ui" line="24"/>
+        <source>Layout:</source>
+        <translation>レイアウト：</translation>
+    </message>
+    <message>
+        <location filename="../ui/printdialog.ui" line="38"/>
+        <source>Scale:</source>
+        <translation>スケール：</translation>
+    </message>
+    <message>
+        <location filename="../ui/printdialog.ui" line="45"/>
+        <source>File format:</source>
+        <translation>ファイル形式：</translation>
+    </message>
+</context>
 <context>
     <name>InstantPrintPlugin</name>
     <message>

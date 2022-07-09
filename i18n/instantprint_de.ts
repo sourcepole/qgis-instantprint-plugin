@@ -4,20 +4,24 @@
 <context>
     <name>InstantPrintDialog</name>
     <message>
+        <location filename="../ui/printdialog.ui" line="14"/>
         <source>Instant Print</source>
-        <translation type="obsolete">Sofortdruck</translation>
+        <translation type="unfinished">Sofortdruck</translation>
     </message>
     <message>
+        <location filename="../ui/printdialog.ui" line="24"/>
         <source>Layout:</source>
-        <translation type="obsolete">Zusammenstellung:</translation>
+        <translation type="unfinished">Zusammenstellung:</translation>
     </message>
     <message>
+        <location filename="../ui/printdialog.ui" line="45"/>
         <source>File format:</source>
-        <translation type="obsolete">Dateiformat:</translation>
+        <translation type="unfinished">Dateiformat:</translation>
     </message>
     <message>
+        <location filename="../ui/printdialog.ui" line="38"/>
         <source>Scale:</source>
-        <translation type="obsolete">Skala:</translation>
+        <translation type="unfinished">Skala:</translation>
     </message>
 </context>
 <context>
