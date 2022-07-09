@@ -31,7 +31,7 @@ class InstantPrintPlugin(QObject):
           
         if os.path.exists(locale_path):
             self.translator = QTranslator()
-            self.translator.load(locale_path)
+            self.translator.load(localepath)
             QCoreApplication.installTranslator(self.translator)
             
     def initGui(self):
