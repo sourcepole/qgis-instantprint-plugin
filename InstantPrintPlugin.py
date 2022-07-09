@@ -13,7 +13,7 @@ from PyQt5.QtCore import QObject, QSettings, QTranslator, QCoreApplication
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QToolButton
 from qgis.gui import QgisInterface
-import os
+import os.path
 from .InstantPrintTool import InstantPrintTool
 from . import resources_rc
 
