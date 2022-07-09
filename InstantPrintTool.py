@@ -8,10 +8,10 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
-from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale
-from PyQt5.QtGui import QColor, QDesktopServices, QIcon
-from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
-from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
+from qgis.PyQt.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal, QLocale
+from qgis.PyQt.QtGui import QColor, QDesktopServices, QIcon
+from qgis.PyQt.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
+from qgis.PyQt.QtPrintSupport import QPrintDialog, QPrinter
 from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, PROJECT_SCALES, QgsLayoutItemMap
 from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
 import os
