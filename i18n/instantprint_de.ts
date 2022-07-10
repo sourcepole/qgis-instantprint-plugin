@@ -27,8 +27,8 @@
 <context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="../InstantPrintPlugin.py" line="41"/>
-        <location filename="../InstantPrintPlugin.py" line="42"/>
+        <location filename="../InstantPrintPlugin.py" line="46"/>
+        <location filename="../InstantPrintPlugin.py" line="47"/>
         <source>Instant Print</source>
         <translation type="unfinished">Sofortdruck</translation>
     </message>

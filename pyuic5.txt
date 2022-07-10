@@ -1,0 +1,1 @@
+pyuic5 -o ui/ui_printdialog.py ui/printdialog.ui

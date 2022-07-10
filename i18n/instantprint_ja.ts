@@ -27,8 +27,8 @@
 <context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="../InstantPrintPlugin.py" line="41"/>
-        <location filename="../InstantPrintPlugin.py" line="42"/>
+        <location filename="../InstantPrintPlugin.py" line="46"/>
+        <location filename="../InstantPrintPlugin.py" line="47"/>
         <source>Instant Print</source>
         <translation>簡単印刷</translation>
     </message>
@@ -53,22 +53,22 @@
     <message>
         <location filename="../InstantPrintTool.py" line="60"/>
         <source>PDF Document (*.pdf);;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="61"/>
         <source>JPG Image (*.jpg);;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="62"/>
         <source>BMP Image (*.bmp);;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="63"/>
         <source>PNG Image (*.png);;</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>

@@ -11,11 +11,12 @@
 from qgis.core import Qgis
 from PyQt5.QtCore import QObject, QSettings, QTranslator, QCoreApplication
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QToolButton
+from PyQt5.QtWidgets import QToolButton,QMessageBox
 from qgis.gui import QgisInterface
 import os
 from .InstantPrintTool import InstantPrintTool
 from . import resources_rc
+
 
 
 class InstantPrintPlugin(QObject):
@@ -29,11 +30,15 @@ class InstantPrintPlugin(QObject):
         # Localize
         locale = QSettings().value("locale/userLocale")[0:2]
         localePath = os.path.join(self.pluginDir, 'i18n', 'instantprint_{}.qm'.format(locale))
-
+        
         if os.path.exists(localePath):
             self.translator = QTranslator()
             self.translator.load(localePath)
             QCoreApplication.installTranslator(self.translator)
+            
+
+
+
 
     def initGui(self):
         self.toolButton = QToolButton(self.iface.mapNavToolToolBar())
