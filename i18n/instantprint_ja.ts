@@ -2,29 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ja_JP">
 <context>
-    <name></name>
-    <message>
-        <source>InstantPrintDialog</source>
-        <comment>Instant Print</comment>
-        <translation type="vanished">簡易印刷</translation>
-    </message>
-    <message>
-        <source>InstantPrintDialog</source>
-        <comment>Layout:</comment>
-        <translation type="vanished">レイアウト:</translation>
-    </message>
-    <message>
-        <source>InstantPrintDialog</source>
-        <comment>Scale:</comment>
-        <translation type="vanished">スケール:</translation>
-    </message>
-    <message>
-        <source>InstantPrintDialog</source>
-        <comment>File format:</comment>
-        <translation type="vanished">ファイル形式</translation>
-    </message>
-</context>
-<context>
     <name>InstantPrintDialog</name>
     <message>
         <location filename="../ui/printdialog.ui" line="14"/>
@@ -91,12 +68,12 @@
     <message>
         <location filename="../InstantPrintTool.py" line="63"/>
         <source>PNG Image (*.png);;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>
         <source>Invalid layout</source>
-        <translation type="unfinished">レイアウトが無効です</translation>
+        <translation>レイアウトが無効です</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>
@@ -134,22 +111,22 @@
     <message>
         <location filename="../ui/ui_printdialog.py" line="81"/>
         <source>Instant Print</source>
-        <translation type="unfinished">簡単印刷</translation>
+        <translation>簡単印刷</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="82"/>
         <source>Layout:</source>
-        <translation type="unfinished">レイアウト：</translation>
+        <translation>レイアウト：</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="83"/>
         <source>Scale:</source>
-        <translation type="unfinished">スケール：</translation>
+        <translation>スケール：</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="84"/>
         <source>File format:</source>
-        <translation type="unfinished">ファイル形式：</translation>
+        <translation>ファイル形式：</translation>
     </message>
 </context>
 </TS>

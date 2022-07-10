@@ -75,7 +75,7 @@ class Ui_InstantPrintDialog(object):
         QtCore.QMetaObject.connectSlotsByName(InstantPrintDialog)
         
     def tr(self, message):
-        return QCoreApplication.translate('InstantPrintPlugin', message)
+        return QCoreApplication.translate('InstantPrintDialog', message)
     
     def retranslateUi(self, InstantPrintDialog):
         InstantPrintDialog.setWindowTitle(self.tr("Instant Print"))
