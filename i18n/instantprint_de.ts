@@ -136,4 +136,27 @@ Keine Sonderzeichen erlaubt</translation>
         <translation>Das Exportieren Der Zusammenstellung konnte  war nicht erfolgreich.</translation>
     </message>
 </context>
+<context>
+    <name>Ui_InstantPrintDialog</name>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="81"/>
+        <source>Instant Print</source>
+        <translation type="unfinished">Sofortdruck</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="82"/>
+        <source>Layout:</source>
+        <translation type="unfinished">Zusammenstellung:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="83"/>
+        <source>Scale:</source>
+        <translation type="unfinished">Skala:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="84"/>
+        <source>File format:</source>
+        <translation type="unfinished">Dateiformat:</translation>
+    </message>
+</context>
 </TS>

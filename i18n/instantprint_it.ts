@@ -126,4 +126,27 @@
         <translation type="vanished">La stampa della composizione non è riuscita.</translation>
     </message>
 </context>
+<context>
+    <name>Ui_InstantPrintDialog</name>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="81"/>
+        <source>Instant Print</source>
+        <translation type="unfinished">Stampa instantanea</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="82"/>
+        <source>Layout:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="83"/>
+        <source>Scale:</source>
+        <translation type="unfinished">Scala:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="84"/>
+        <source>File format:</source>
+        <translation type="unfinished">Formato:</translation>
+    </message>
+</context>
 </TS>

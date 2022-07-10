@@ -10,6 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 
 class Ui_InstantPrintDialog(object):
     def setupUi(self, InstantPrintDialog):
@@ -72,11 +73,14 @@ class Ui_InstantPrintDialog(object):
         self.buttonBox.accepted.connect(InstantPrintDialog.accept)
         self.buttonBox.rejected.connect(InstantPrintDialog.reject)
         QtCore.QMetaObject.connectSlotsByName(InstantPrintDialog)
-
+        
+    def tr(self, message):
+        return QCoreApplication.translate('InstantPrintPlugin', message)
+    
     def retranslateUi(self, InstantPrintDialog):
-        _translate = QtCore.QCoreApplication.translate
-        InstantPrintDialog.setWindowTitle(_translate("InstantPrintDialog", "Instant Print"))
-        self.label_layout.setText(_translate("InstantPrintDialog", "Layout:"))
-        self.label.setText(_translate("InstantPrintDialog", "Scale:"))
-        self.label_fileformat.setText(_translate("InstantPrintDialog", "File format:"))
+        InstantPrintDialog.setWindowTitle(self.tr("Instant Print"))
+        self.label_layout.setText(self.tr("Layout:"))
+        self.label.setText(self.tr("Scale:"))
+        self.label_fileformat.setText(self.tr("File format:"))
+
 from qgis.gui import QgsScaleComboBox

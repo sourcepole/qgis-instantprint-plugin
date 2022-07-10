@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ja">
+<TS version="2.1" language="ja_JP">
+<context>
+    <name></name>
+    <message>
+        <source>InstantPrintDialog</source>
+        <comment>Instant Print</comment>
+        <translation type="vanished">簡易印刷</translation>
+    </message>
+    <message>
+        <source>InstantPrintDialog</source>
+        <comment>Layout:</comment>
+        <translation type="vanished">レイアウト:</translation>
+    </message>
+    <message>
+        <source>InstantPrintDialog</source>
+        <comment>Scale:</comment>
+        <translation type="vanished">スケール:</translation>
+    </message>
+    <message>
+        <source>InstantPrintDialog</source>
+        <comment>File format:</comment>
+        <translation type="vanished">ファイル形式</translation>
+    </message>
+</context>
 <context>
     <name>InstantPrintDialog</name>
     <message>
@@ -53,17 +76,17 @@
     <message>
         <location filename="../InstantPrintTool.py" line="60"/>
         <source>PDF Document (*.pdf);;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="61"/>
         <source>JPG Image (*.jpg);;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="62"/>
         <source>BMP Image (*.bmp);;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="63"/>
@@ -73,7 +96,7 @@
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>
         <source>Invalid layout</source>
-        <translation>レイアウトが無効です</translation>
+        <translation type="unfinished">レイアウトが無効です</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>
@@ -104,6 +127,29 @@
         <location filename="../InstantPrintTool.py" line="295"/>
         <source>Failed to print the layout.</source>
         <translation>レイアウトの印刷に失敗しました。</translation>
+    </message>
+</context>
+<context>
+    <name>Ui_InstantPrintDialog</name>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="81"/>
+        <source>Instant Print</source>
+        <translation type="unfinished">簡単印刷</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="82"/>
+        <source>Layout:</source>
+        <translation type="unfinished">レイアウト：</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="83"/>
+        <source>Scale:</source>
+        <translation type="unfinished">スケール：</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="84"/>
+        <source>File format:</source>
+        <translation type="unfinished">ファイル形式：</translation>
     </message>
 </context>
 </TS>
