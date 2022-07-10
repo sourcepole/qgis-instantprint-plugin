@@ -1,9 +1,9 @@
 SOURCES += \
-    instantPrintPlugin.py \
-    instantPrintTool.py \
-    instantprint_dialog.py
+    InstantPrintPlugin.py \
+    InstantPrintTool.py \
+    ui/ui_printdialog.py
 
-FORMS = instantprint_dialog_base.ui
+FORMS = ui/printdialog.ui
 
 TRANSLATIONS += i18n/instantprint_de.ts \
                 i18n/instantprint_it.ts \

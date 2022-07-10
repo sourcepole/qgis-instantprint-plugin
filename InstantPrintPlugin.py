@@ -8,16 +8,15 @@
 #    copyright            : (C) 2014-2015 by Sandro Mani / Sourcepole AG
 #    email                : smani@sourcepole.ch
 
-
-from qgis.PyQt.QtCore import QObject,QSettings, QTranslator, QCoreApplication
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QToolButton
-
-# Initialize Qt resources from file resources.py
+from qgis.core import Qgis
+from PyQt5.QtCore import QObject, QSettings, QTranslator, QCoreApplication
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QToolButton
+from qgis.gui import QgisInterface
+import os
+from .InstantPrintTool import InstantPrintTool
 from . import resources_rc
 
-import os.path
-from .InstantPrintTool import InstantPrintTool
 
 class InstantPrintPlugin(QObject):
     def __init__(self, iface):
@@ -27,15 +26,15 @@ class InstantPrintPlugin(QObject):
         self.pluginDir = os.path.dirname(__file__)
         self.tool = InstantPrintTool(self.iface)
 
-        # initialize locale
-        locale = QSettings().value('locale/userLocale')[0:2]
+        # Localize
+        locale = QSettings().value("locale/userLocale")[0:2]
         localePath = os.path.join(self.pluginDir, 'i18n', 'instantprint_{}.qm'.format(locale))
-          
+
         if os.path.exists(localePath):
             self.translator = QTranslator()
             self.translator.load(localePath)
             QCoreApplication.installTranslator(self.translator)
-            
+
     def initGui(self):
         self.toolButton = QToolButton(self.iface.mapNavToolToolBar())
         self.toolButton.setIcon(QIcon(":/plugins/instantprint/icons/icon.png"))
