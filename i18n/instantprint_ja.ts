@@ -11,17 +11,17 @@
     <message>
         <location filename="../ui/printdialog.ui" line="24"/>
         <source>Layout:</source>
-        <translation>レイアウト：</translation>
+        <translation>レイアウト:</translation>
     </message>
     <message>
         <location filename="../ui/printdialog.ui" line="38"/>
         <source>Scale:</source>
-        <translation>スケール：</translation>
+        <translation>スケール:</translation>
     </message>
     <message>
         <location filename="../ui/printdialog.ui" line="45"/>
         <source>File format:</source>
-        <translation>ファイル形式：</translation>
+        <translation>ファイル形式:</translation>
     </message>
 </context>
 <context>
