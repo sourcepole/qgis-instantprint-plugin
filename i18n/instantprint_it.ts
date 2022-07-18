@@ -4,27 +4,35 @@
 <context>
     <name>InstantPrintDialog</name>
     <message>
+        <location filename="../ui/printdialog.ui" line="14"/>
         <source>Instant Print</source>
-        <translation type="vanished">Stampa instantanea</translation>
+        <translation>Stampa instantanea</translation>
+    </message>
+    <message>
+        <location filename="../ui/printdialog.ui" line="24"/>
+        <source>Layout:</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Composer:</source>
         <translation type="vanished">Composizione:</translation>
     </message>
     <message>
+        <location filename="../ui/printdialog.ui" line="45"/>
         <source>File format:</source>
-        <translation type="vanished">Formato:</translation>
+        <translation>Formato:</translation>
     </message>
     <message>
+        <location filename="../ui/printdialog.ui" line="38"/>
         <source>Scale:</source>
-        <translation type="vanished">Scala:</translation>
+        <translation>Scala:</translation>
     </message>
 </context>
 <context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="../InstantPrintPlugin.py" line="41"/>
-        <location filename="../InstantPrintPlugin.py" line="42"/>
+        <location filename="../InstantPrintPlugin.py" line="44"/>
+        <location filename="../InstantPrintPlugin.py" line="45"/>
         <source>Instant Print</source>
         <translation>Stampa instantanea</translation>
     </message>
@@ -116,6 +124,29 @@
     <message>
         <source>Failed to print the composition.</source>
         <translation type="vanished">La stampa della composizione non è riuscita.</translation>
+    </message>
+</context>
+<context>
+    <name>Ui_InstantPrintDialog</name>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="79"/>
+        <source>Instant Print</source>
+        <translation type="unfinished">Stampa instantanea</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="80"/>
+        <source>Layout:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="81"/>
+        <source>Scale:</source>
+        <translation type="unfinished">Scala:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="82"/>
+        <source>File format:</source>
+        <translation type="unfinished">Formato:</translation>
     </message>
 </context>
 </TS>

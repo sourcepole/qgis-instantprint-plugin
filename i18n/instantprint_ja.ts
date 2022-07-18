@@ -2,10 +2,33 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ja">
 <context>
+    <name>InstantPrintDialog</name>
+    <message>
+        <location filename="../ui/printdialog.ui" line="14"/>
+        <source>Instant Print</source>
+        <translation>簡単印刷</translation>
+    </message>
+    <message>
+        <location filename="../ui/printdialog.ui" line="24"/>
+        <source>Layout:</source>
+        <translation>レイアウト:</translation>
+    </message>
+    <message>
+        <location filename="../ui/printdialog.ui" line="38"/>
+        <source>Scale:</source>
+        <translation>縮尺:</translation>
+    </message>
+    <message>
+        <location filename="../ui/printdialog.ui" line="45"/>
+        <source>File format:</source>
+        <translation>ファイル形式:</translation>
+    </message>
+</context>
+<context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="../InstantPrintPlugin.py" line="41"/>
-        <location filename="../InstantPrintPlugin.py" line="42"/>
+        <location filename="../InstantPrintPlugin.py" line="44"/>
+        <location filename="../InstantPrintPlugin.py" line="45"/>
         <source>Instant Print</source>
         <translation>簡単印刷</translation>
     </message>
@@ -81,6 +104,29 @@
         <location filename="../InstantPrintTool.py" line="295"/>
         <source>Failed to print the layout.</source>
         <translation>レイアウトの印刷に失敗しました。</translation>
+    </message>
+</context>
+<context>
+    <name>Ui_InstantPrintDialog</name>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="79"/>
+        <source>Instant Print</source>
+        <translation>簡単印刷</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="80"/>
+        <source>Layout:</source>
+        <translation>レイアウト:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="81"/>
+        <source>Scale:</source>
+        <translation>縮尺:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="82"/>
+        <source>File format:</source>
+        <translation>ファイル形式:</translation>
     </message>
 </context>
 </TS>

@@ -4,27 +4,31 @@
 <context>
     <name>InstantPrintDialog</name>
     <message>
+        <location filename="../ui/printdialog.ui" line="14"/>
         <source>Instant Print</source>
-        <translation type="obsolete">Sofortdruck</translation>
+        <translation type="unfinished">Sofortdruck</translation>
     </message>
     <message>
+        <location filename="../ui/printdialog.ui" line="24"/>
         <source>Layout:</source>
-        <translation type="obsolete">Zusammenstellung:</translation>
+        <translation type="unfinished">Zusammenstellung:</translation>
     </message>
     <message>
+        <location filename="../ui/printdialog.ui" line="45"/>
         <source>File format:</source>
-        <translation type="obsolete">Dateiformat:</translation>
+        <translation type="unfinished">Dateiformat:</translation>
     </message>
     <message>
+        <location filename="../ui/printdialog.ui" line="38"/>
         <source>Scale:</source>
-        <translation type="obsolete">Skala:</translation>
+        <translation type="unfinished">Skala:</translation>
     </message>
 </context>
 <context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="../InstantPrintPlugin.py" line="41"/>
-        <location filename="../InstantPrintPlugin.py" line="42"/>
+        <location filename="../InstantPrintPlugin.py" line="44"/>
+        <location filename="../InstantPrintPlugin.py" line="45"/>
         <source>Instant Print</source>
         <translation type="unfinished">Sofortdruck</translation>
     </message>
@@ -130,6 +134,29 @@ Keine Sonderzeichen erlaubt</translation>
         <location filename="../InstantPrintTool.py" line="281"/>
         <source>Failed to export the layout.</source>
         <translation>Das Exportieren Der Zusammenstellung konnte  war nicht erfolgreich.</translation>
+    </message>
+</context>
+<context>
+    <name>Ui_InstantPrintDialog</name>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="79"/>
+        <source>Instant Print</source>
+        <translation type="unfinished">Sofortdruck</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="80"/>
+        <source>Layout:</source>
+        <translation type="unfinished">Zusammenstellung:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="81"/>
+        <source>Scale:</source>
+        <translation type="unfinished">Skala:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py" line="82"/>
+        <source>File format:</source>
+        <translation type="unfinished">Dateiformat:</translation>
     </message>
 </context>
 </TS>
