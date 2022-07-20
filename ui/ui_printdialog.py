@@ -76,9 +76,9 @@ class Ui_InstantPrintDialog(object):
 
     def retranslateUi(self, InstantPrintDialog):
         _translate = QtCore.QCoreApplication.translate
-        InstantPrintDialog.setWindowTitle(_translate("InstantPrintDialog", self.tr("Instant Print")))
-        self.label_layout.setText(_translate("InstantPrintDialog", self.tr("Layout:")))
-        self.label.setText(_translate("InstantPrintDialog", self.tr("Scale:")))
-        self.label_fileformat.setText(_translate("InstantPrintDialog", self.tr("File format:")))
+        InstantPrintDialog.setWindowTitle(self.tr("Instant Print"))
+        self.label_layout.setText(self.tr("Layout:"))
+        self.label.setText(self.tr("Scale:"))
+        self.label_fileformat.setText(self.tr("File format:"))
 
 from qgis.gui import QgsScaleComboBox
