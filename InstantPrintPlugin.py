@@ -32,7 +32,7 @@ class InstantPrintPlugin(QObject):
         if os.path.exists(localePath):
             self.translator = QTranslator()
             self.translator.load(localePath)
-            QCoreApplication.installTranslator(self.translator)    
+            QCoreApplication.installTranslator(self.translator)
              
         self.tool = InstantPrintTool(self.iface)
 
