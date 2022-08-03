@@ -11,7 +11,7 @@
     <message>
         <location filename="../ui/printdialog.ui" line="24"/>
         <source>Layout:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Composer:</source>
@@ -47,7 +47,7 @@
     <message>
         <location filename="../InstantPrintTool.py" line="58"/>
         <source>Print</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="59"/>
@@ -77,32 +77,32 @@
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>
         <source>Invalid layout</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>
         <source>The layout must have exactly one map item.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="258"/>
         <source>Export Layout</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="281"/>
         <source>Export Failed</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="281"/>
         <source>Failed to export the layout.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="295"/>
         <source>Failed to print the layout.</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <source>Invalid composer</source>
@@ -131,22 +131,22 @@
     <message>
         <location filename="../ui/ui_printdialog.py" line="79"/>
         <source>Instant Print</source>
-        <translation type="unfinished">Stampa instantanea</translation>
+        <translation>Stampa instantanea</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="80"/>
         <source>Layout:</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="81"/>
         <source>Scale:</source>
-        <translation type="unfinished">Scala:</translation>
+        <translation>Scala:</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="82"/>
         <source>File format:</source>
-        <translation type="unfinished">Formato:</translation>
+        <translation>Formato:</translation>
     </message>
 </context>
 </TS>

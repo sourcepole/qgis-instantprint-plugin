@@ -6,22 +6,22 @@
     <message>
         <location filename="../ui/printdialog.ui" line="14"/>
         <source>Instant Print</source>
-        <translation type="unfinished">Sofortdruck</translation>
+        <translation>Sofortdruck</translation>
     </message>
     <message>
         <location filename="../ui/printdialog.ui" line="24"/>
         <source>Layout:</source>
-        <translation type="unfinished">Zusammenstellung:</translation>
+        <translation>Zusammenstellung:</translation>
     </message>
     <message>
         <location filename="../ui/printdialog.ui" line="45"/>
         <source>File format:</source>
-        <translation type="unfinished">Dateiformat:</translation>
+        <translation>Dateiformat:</translation>
     </message>
     <message>
         <location filename="../ui/printdialog.ui" line="38"/>
         <source>Scale:</source>
-        <translation type="unfinished">Skala:</translation>
+        <translation>Skala:</translation>
     </message>
 </context>
 <context>
@@ -30,7 +30,7 @@
         <location filename="../InstantPrintPlugin.py" line="44"/>
         <location filename="../InstantPrintPlugin.py" line="45"/>
         <source>Instant Print</source>
-        <translation type="unfinished">Sofortdruck</translation>
+        <translation>Sofortdruck</translation>
     </message>
 </context>
 <context>
@@ -141,22 +141,22 @@ Keine Sonderzeichen erlaubt</translation>
     <message>
         <location filename="../ui/ui_printdialog.py" line="79"/>
         <source>Instant Print</source>
-        <translation type="unfinished">Sofortdruck</translation>
+        <translation>Sofortdruck</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="80"/>
         <source>Layout:</source>
-        <translation type="unfinished">Zusammenstellung:</translation>
+        <translation>Zusammenstellung:</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="81"/>
         <source>Scale:</source>
-        <translation type="unfinished">Skala:</translation>
+        <translation>Skala:</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="82"/>
         <source>File format:</source>
-        <translation type="unfinished">Dateiformat:</translation>
+        <translation>Dateiformat:</translation>
     </message>
 </context>
 </TS>
