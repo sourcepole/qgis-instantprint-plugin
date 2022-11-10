@@ -11,23 +11,22 @@
     <message>
         <location filename="../ui/printdialog.ui" line="24"/>
         <source>Layout:</source>
-        <translation>Zusammenstellung:</translation>
-    </message>
-    <message>
-        <location filename="../ui/printdialog.ui" line="45"/>
-        <source>File format:</source>
-        <translation>Dateiformat:</translation>
+        <translation>Drucklayout:</translation>
     </message>
     <message>
         <location filename="../ui/printdialog.ui" line="38"/>
         <source>Scale:</source>
         <translation>Skala:</translation>
     </message>
+    <message>
+        <location filename="../ui/printdialog.ui" line="45"/>
+        <source>File format:</source>
+        <translation>Dateiformat:</translation>
+    </message>
 </context>
 <context>
     <name>InstantPrintPlugin</name>
     <message>
-        <location filename="../InstantPrintPlugin.py" line="44"/>
         <location filename="../InstantPrintPlugin.py" line="45"/>
         <source>Instant Print</source>
         <translation>Sofortdruck</translation>
@@ -35,15 +34,6 @@
 </context>
 <context>
     <name>InstantPrintTool</name>
-    <message>
-        <source>Print Composition</source>
-        <translation type="obsolete">Zusammenstellung drucken</translation>
-    </message>
-    <message>
-        <location filename="../InstantPrintTool.py" line="295"/>
-        <source>Print Failed</source>
-        <translation>Das Drucken ist gescheitert</translation>
-    </message>
     <message>
         <location filename="../InstantPrintTool.py" line="57"/>
         <source>Export</source>
@@ -62,78 +52,57 @@
     <message>
         <location filename="../InstantPrintTool.py" line="60"/>
         <source>PDF Document (*.pdf);;</source>
-        <translation>PDF Dokument (*.pdf);;</translation>
+        <translation>PDF-Dokument (*.pdf);;</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="61"/>
         <source>JPG Image (*.jpg);;</source>
-        <translation>JPG Bild (*.jpg);;</translation>
+        <translation>JPG-Bild (*.jpg);;</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="62"/>
         <source>BMP Image (*.bmp);;</source>
-        <translation>BMP Bild (*.jpg);;</translation>
+        <translation>BMP-Bild (*.bmp);;</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="63"/>
         <source>PNG Image (*.png);;</source>
-        <translation>PNG Bild (*.jpg);;</translation>
+        <translation>PNG-Bild (*.png);;</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>
         <source>Invalid layout</source>
-        <translation>Ungültige Zusammenstellung</translation>
+        <translation>Ungültiges Drucklayout</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="153"/>
         <source>The layout must have exactly one map item.</source>
-        <translation>Die Zusammenstellung muss genau ein Kartenelement haben.</translation>
+        <translation>Das Drucklayout muss genau ein Kartenelement enthalten.</translation>
     </message>
     <message>
-        <source>Failed to print the composition.</source>
-        <translation type="obsolete">Das Drucken der Zusammenstellung war nicht erfolgreich.</translation>
-    </message>
-    <message>
-        <location filename="../InstantPrintTool.py" line="295"/>
-        <source>Failed to print the layout.</source>
-        <translation>Das Drucken der Zusammenstellung war nicht erfolgreich.</translation>
-    </message>
-    <message>
-        <source>Cannot delete default scale</source>
-        <translation type="obsolete">Die Standart Skala kann nicht gelöscht</translation>
-    </message>
-    <message>
-        <source>Delete scale</source>
-        <translation type="obsolete">Skala löschen</translation>
-    </message>
-    <message>
-        <source>Add new scale</source>
-        <translation type="obsolete">Skala hinzufügen</translation>
-    </message>
-    <message>
-        <source>Cannot add invalid Scale
-Format: 1:number
-Only whole numbers allowed
-No special charactars allowed</source>
-        <translation type="obsolete">Ungülitge Skala kann nicht hinzugefügt werden
-Format: 1:Nummer
-Nur ganze Zahlen erlaubt
-Keine Sonderzeichen erlaubt</translation>
-    </message>
-    <message>
-        <location filename="../InstantPrintTool.py" line="258"/>
+        <location filename="../InstantPrintTool.py" line="256"/>
         <source>Export Layout</source>
-        <translation>Zusammenstellung exportieren</translation>
+        <translation>Drucklayout exportieren</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="281"/>
         <source>Export Failed</source>
-        <translation>Das Exportieren war nicht erfolgreich</translation>
+        <translation>Export fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../InstantPrintTool.py" line="281"/>
         <source>Failed to export the layout.</source>
-        <translation>Das Exportieren Der Zusammenstellung konnte  war nicht erfolgreich.</translation>
+        <translation>Das Drucklayout konnte nicht exportiert werden.</translation>
+    </message>
+    <message>
+        <location filename="../InstantPrintTool.py" line="295"/>
+        <source>Print Failed</source>
+        <translation>Drucken fehlgeschlagen</translation>
+    </message>
+    <message>
+        <location filename="../InstantPrintTool.py" line="295"/>
+        <source>Failed to print the layout.</source>
+        <translation>Das Drucklayout konnte nicht gedruckt werden.</translation>
     </message>
 </context>
 <context>
@@ -146,7 +115,7 @@ Keine Sonderzeichen erlaubt</translation>
     <message>
         <location filename="../ui/ui_printdialog.py" line="80"/>
         <source>Layout:</source>
-        <translation>Zusammenstellung:</translation>
+        <translation>Drucklayout:</translation>
     </message>
     <message>
         <location filename="../ui/ui_printdialog.py" line="81"/>
