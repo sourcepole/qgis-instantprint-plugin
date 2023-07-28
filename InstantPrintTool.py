@@ -272,6 +272,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         success = False
         layout_name = self.dialogui.comboBox_layouts.currentText()
         layout_item = self.projectLayoutManager.layoutByName(layout_name)
+        layout_item.refresh()
         exporter = QgsLayoutExporter(layout_item)
         if filename[-3:].lower() == u"pdf":
             success = exporter.exportToPdf(filepath[0], QgsLayoutExporter.PdfExportSettings())
@@ -283,6 +284,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def __print(self):
         layout_name = self.dialogui.comboBox_layouts.currentText()
         layout_item = self.projectLayoutManager.layoutByName(layout_name)
+        layout_item.refresh()
         actual_printer = QgsLayoutExporter(layout_item)
 
         printdialog = QPrintDialog(self.printer)
