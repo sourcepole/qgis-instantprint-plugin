@@ -14,7 +14,7 @@ qgisMinimumVersion=3.0
 qgisMaximumVersion=3.99
 description=Instantly print map excerpts
 about=The instant print plugin allows to quickly print map excerpts to a file, utilizing an existing composer as page layout.
-version=3.0.0
+version=3.0.1
 author=Sandro Mani, Sourcepole AG
 email=smani@sourcepole.ch
 
@@ -24,6 +24,10 @@ email=smani@sourcepole.ch
 
 # Uncomment the following line and add your changelog entries:
 changelog=
+ Rev 3.0.1 (24.01.2025)
+  - Resolve "unexpected type 'float'" (@gducerf)
+  - Refresh LayoutItem prior to printing or exporting to update Item (@ictoain)
+
  Rev 3.0.0 (08.03.2018)
   - QGIS 3.0 support
   - Allow managing predefined scales
