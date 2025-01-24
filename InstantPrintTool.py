@@ -248,7 +248,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         mtp = self.iface.mapCanvas().mapSettings().mapToPixel()
         p1 = mtp.transform(QgsPoint(rect.left(), rect.top()))
         p2 = mtp.transform(QgsPoint(rect.right(), rect.bottom()))
-        return QRect(p1.x(), p1.y(), p2.x() - p1.x(), p2.y() - p1.y())
+        return QRect(int(p1.x()), int(p1.y()), int(p2.x() - p1.x()), int(p2.y() - p1.y()))
 
     def __export(self):
         settings = QSettings()
