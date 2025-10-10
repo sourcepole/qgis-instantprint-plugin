@@ -9,13 +9,12 @@
 #    email                : smani@sourcepole.ch
 
 from qgis.core import Qgis
-from PyQt5.QtCore import QObject, QSettings, QTranslator, QCoreApplication
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QToolButton
+from qgis.PyQt.QtCore import QObject, QSettings, QTranslator, QCoreApplication
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QToolButton
 from qgis.gui import QgisInterface
 import os
 from .InstantPrintTool import InstantPrintTool
-from . import resources_rc
 
 
 class InstantPrintPlugin(QObject):
@@ -40,7 +39,8 @@ class InstantPrintPlugin(QObject):
 
     def initGui(self):
         self.toolButton = QToolButton(self.iface.mapNavToolToolBar())
-        self.toolButton.setIcon(QIcon(":/plugins/instantprint/icons/icon.png"))
+        icon_path = os.path.join(self.pluginDir, "icons", "icon.png")
+        self.toolButton.setIcon(QIcon(icon_path))
         self.toolButton.setText(self.tr("Instant Print"))
         self.toolButton.setToolTip(self.tr("Instant Print"))
         self.toolButton.setCheckable(True)
