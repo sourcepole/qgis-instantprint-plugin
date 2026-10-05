@@ -27,6 +27,11 @@
         <source>Scale:</source>
         <translation>Scala:</translation>
     </message>
+    <message>
+        <location filename="../ui/printdialog.ui"/>
+        <source>Rotation:</source>
+        <translation>Rotazione:</translation>
+    </message>
 </context>
 <context>
     <name>InstantPrintPlugin</name>
@@ -147,6 +152,11 @@
         <location filename="../ui/ui_printdialog.py" line="82"/>
         <source>File format:</source>
         <translation>Formato:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py"/>
+        <source>Rotation:</source>
+        <translation>Rotazione:</translation>
     </message>
 </context>
 </TS>

@@ -12,9 +12,10 @@ from PyQt5.QtCore import Qt, QSettings, QPointF, QRectF, QRect, QUrl, pyqtSignal
 from PyQt5.QtGui import QColor, QDesktopServices, QIcon
 from PyQt5.QtWidgets import QDialog, QDialogButtonBox, QMessageBox, QFileDialog
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter
-from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, PROJECT_SCALES, QgsLayoutItemMap
+from qgis.core import QgsRectangle, QgsLayoutManager, QgsPointXY as QgsPoint, QgsGeometry, Qgis, QgsProject, QgsWkbTypes, QgsLayoutExporter, PROJECT_SCALES, QgsLayoutItemMap
 from qgis.gui import QgisInterface, QgsMapTool, QgsRubberBand
 import os
+import math
 from .ui.ui_printdialog import Ui_InstantPrintDialog
 
 
@@ -66,6 +67,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.dialogui.comboBox_layouts.currentIndexChanged.connect(self.__selectLayout)
         self.dialogui.comboBox_scale.lineEdit().textChanged.connect(self.__changeScale)
         self.dialogui.comboBox_scale.scaleChanged.connect(self.__changeScale)
+        self.dialogui.spinBox_rotation.valueChanged.connect(self.__changeRotation)
         self.exportButton.clicked.connect(self.__export)
         self.printButton.clicked.connect(self.__print)
         self.helpButton.clicked.connect(self.__help)
@@ -135,6 +137,40 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.__createRubberBand()
         self.check_scales()
 
+    def __changeRotation(self, angle):
+        if not self.mapitem:
+            return
+        self.mapitem.setMapRotation(angle)
+        if self.rubberband:
+            self.__updateRubberBand(self.rubberband, self.rect)
+
+    def __frameGeometry(self, rect):
+        """Return the map area covered by the layout map for the unrotated
+        extent rectangle rect, taking the map rotation into account.
+
+        This mirrors QgsLayoutItemMap::visibleExtentPolygon(): a positive map
+        rotation turns the map content clockwise on the page, hence the area
+        covered on the map is the extent rotated counter-clockwise around its
+        centre.
+        """
+        angle = math.radians(self.dialogui.spinBox_rotation.value())
+        cos_a = math.cos(angle)
+        sin_a = math.sin(angle)
+        cx = rect.center().x()
+        cy = rect.center().y()
+        points = []
+        for x, y in ((rect.left(), rect.top()), (rect.right(), rect.top()),
+                     (rect.right(), rect.bottom()), (rect.left(), rect.bottom())):
+            dx = x - cx
+            dy = y - cy
+            points.append(QgsPoint(cx + dx * cos_a - dy * sin_a,
+                                   cy + dx * sin_a + dy * cos_a))
+        points.append(points[0])
+        return QgsGeometry.fromPolygonXY([points])
+
+    def __updateRubberBand(self, rubberband, rect):
+        rubberband.setToGeometry(self.__frameGeometry(rect), None)
+
     def __selectLayout(self):
         if not self.dialog.isVisible():
             return
@@ -155,14 +191,19 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.iface.mapCanvas().scene().removeItem(self.rubberband)
             self.rubberband = None
             self.dialogui.comboBox_scale.setEnabled(False)
+            self.dialogui.spinBox_rotation.setEnabled(False)
             return
 
         self.dialogui.comboBox_scale.setEnabled(True)
+        self.dialogui.spinBox_rotation.setEnabled(True)
         self.exportButton.setEnabled(True)
 
         self.layoutView = layoutView
         self.mapitem = layout.referenceMap()
         self.dialogui.comboBox_scale.setScale(self.mapitem.scale())
+        self.dialogui.spinBox_rotation.blockSignals(True)
+        self.dialogui.spinBox_rotation.setValue(self.mapitem.mapRotation())
+        self.dialogui.spinBox_rotation.blockSignals(False)
         self.__createRubberBand()
 
     def __createRubberBand(self):
@@ -173,7 +214,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         self.rect = QRectF(self.corner.x(), self.corner.y(), extent.width(), extent.height())
         self.mapitem.setExtent(QgsRectangle(self.rect))
         self.rubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
-        self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
+        self.__updateRubberBand(self.rubberband, self.rect)
         self.rubberband.setColor(QColor(127, 127, 255, 127))
 
         self.pressPos = None
@@ -190,11 +231,10 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
     def canvasPressEvent(self, e):
         if not self.rubberband:
             return
-        r = self.__canvasRect(self.rect)
-        if e.button() == Qt.LeftButton and self.__canvasRect(self.rect).contains(e.pos()):
+        if e.button() == Qt.LeftButton and self.__frameGeometry(self.rect).contains(e.mapPoint()):
             self.oldrect = QRectF(self.rect)
             self.oldrubberband = QgsRubberBand(self.iface.mapCanvas(), QgsWkbTypes.PolygonGeometry)
-            self.oldrubberband.setToCanvasRectangle(self.__canvasRect(self.oldrect))
+            self.__updateRubberBand(self.oldrubberband, self.oldrect)
             self.oldrubberband.setColor(QColor(127, 127, 255, 31))
             self.pressPos = (e.x(), e.y())
             self.iface.mapCanvas().setCursor(Qt.ClosedHandCursor)
@@ -232,7 +272,7 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
             self.rect.width(),
             self.rect.height()
         )
-        self.rubberband.setToCanvasRectangle(self.__canvasRect(self.rect))
+        self.__updateRubberBand(self.rubberband, self.rect)
 
     def canvasReleaseEvent(self, e):
         if e.button() == Qt.LeftButton and self.pressPos:
@@ -318,10 +358,12 @@ class InstantPrintTool(QgsMapTool, InstantPrintDialog):
         if self.dialogui.comboBox_layouts.count() > 0:
             self.dialogui.comboBox_layouts.setCurrentIndex(active)
             self.dialogui.comboBox_scale.setEnabled(True)
+            self.dialogui.spinBox_rotation.setEnabled(True)
             self.exportButton.setEnabled(True)
         else:
             self.exportButton.setEnabled(False)
             self.dialogui.comboBox_scale.setEnabled(False)
+            self.dialogui.spinBox_rotation.setEnabled(False)
 
     def __help(self):
         manualPath = os.path.join(os.path.dirname(__file__), "help", "documentation.pdf")

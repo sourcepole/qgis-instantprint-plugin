@@ -23,6 +23,11 @@
         <source>File format:</source>
         <translation>Dateiformat:</translation>
     </message>
+    <message>
+        <location filename="../ui/printdialog.ui"/>
+        <source>Rotation:</source>
+        <translation>Drehwinkel:</translation>
+    </message>
 </context>
 <context>
     <name>InstantPrintPlugin</name>
@@ -126,6 +131,11 @@
         <location filename="../ui/ui_printdialog.py" line="82"/>
         <source>File format:</source>
         <translation>Dateiformat:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py"/>
+        <source>Rotation:</source>
+        <translation>Drehwinkel:</translation>
     </message>
 </context>
 </TS>

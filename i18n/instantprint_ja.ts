@@ -23,6 +23,11 @@
         <source>File format:</source>
         <translation>ファイル形式:</translation>
     </message>
+    <message>
+        <location filename="../ui/printdialog.ui"/>
+        <source>Rotation:</source>
+        <translation>回転角:</translation>
+    </message>
 </context>
 <context>
     <name>InstantPrintPlugin</name>
@@ -127,6 +132,11 @@
         <location filename="../ui/ui_printdialog.py" line="82"/>
         <source>File format:</source>
         <translation>ファイル形式:</translation>
+    </message>
+    <message>
+        <location filename="../ui/ui_printdialog.py"/>
+        <source>Rotation:</source>
+        <translation>回転角:</translation>
     </message>
 </context>
 </TS>

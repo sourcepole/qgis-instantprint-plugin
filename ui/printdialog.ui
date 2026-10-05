@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>357</width>
-    <height>157</height>
+    <height>185</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,16 +40,42 @@
     </widget>
    </item>
    <item row="2" column="0">
+    <widget class="QLabel" name="label_rotation">
+     <property name="text">
+      <string>Rotation:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QDoubleSpinBox" name="spinBox_rotation">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="suffix">
+      <string> °</string>
+     </property>
+     <property name="decimals">
+      <number>1</number>
+     </property>
+     <property name="minimum">
+      <double>-360.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>360.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <widget class="QLabel" name="label_fileformat">
      <property name="text">
       <string>File format:</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="3" column="1">
     <widget class="QComboBox" name="comboBox_fileformat"/>
    </item>
-   <item row="3" column="0" colspan="2">
+   <item row="4" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
